@@ -1,1 +1,111 @@
 @import "tailwindcss";
+
+:root {
+  --background: #f8f9f7;
+  --foreground: #171b20;
+  --card: #ffffff;
+  --card-foreground: #171b20;
+  --popover: #ffffff;
+  --popover-foreground: #171b20;
+  --primary: #426b78;
+  --primary-foreground: #ffffff;
+  --secondary: #f1f3f4;
+  --secondary-foreground: #303b43;
+  --muted: #f1f3f4;
+  --muted-foreground: #626b77;
+  --accent: #eaf0f2;
+  --accent-foreground: #315461;
+  --destructive: #b32636;
+  --border: #e6e9ec;
+  --input: #d4dadd;
+  --ring: #426b78;
+  --radius: 1rem;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --font-sans: Arial, Helvetica, sans-serif;
+  --radius-sm: calc(var(--radius) - 6px);
+  --radius-md: calc(var(--radius) - 4px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+  }
+  button,
+  a,
+  input,
+  select,
+  summary {
+    @apply focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary;
+  }
+  button,
+  summary {
+    cursor: pointer;
+  }
+  ::selection {
+    background: #dae7eb;
+  }
+  h1,
+  h2,
+  h3 {
+    text-wrap: balance;
+  }
+  [id] {
+    scroll-margin-top: 6rem;
+  }
+}
+
+@layer components {
+  .surface {
+    @apply rounded-2xl border bg-card shadow-[0_2px_8px_#17202c03];
+  }
+  .eyebrow {
+    @apply text-[10px] font-bold tracking-[0.16em] uppercase text-muted-foreground;
+  }
+  .text-link {
+    @apply inline-flex items-center gap-1.5 text-sm font-semibold text-primary underline-offset-4 hover:underline;
+  }
+  .page-title {
+    @apply text-3xl font-semibold tracking-[-0.035em] sm:text-4xl;
+  }
+  .section-title {
+    @apply text-lg font-semibold tracking-[-0.025em];
+  }
+  .subtle {
+    @apply text-sm leading-6 text-muted-foreground;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
+}
