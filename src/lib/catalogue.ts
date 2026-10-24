@@ -1,3 +1,5 @@
+import { seriesDefinitions } from "./statistics/definitions";
+
 export const topics = [
   {
     slug: "economy",
@@ -182,8 +184,7 @@ type Indicator = {
   description: string;
 };
 
-// Dataset identifiers and source assignments are added only after verification in Phase 2.
-export const indicators: Indicator[] = [
+const plannedIndicators: Indicator[] = [
   {
     slug: "real-gdp-growth",
     name: "Realni rast BDP-a",
@@ -499,12 +500,39 @@ export const indicators: Indicator[] = [
   },
 ];
 
+const additionalIndicators: Pick<Indicator, "slug" | "name" | "nameEn" | "topic">[] = [
+  { slug: "youth-unemployment", name: "Nezaposlenost mladih", nameEn: "Youth unemployment", topic: "employment" },
+  { slug: "employment-rate", name: "Stopa zaposlenosti (20–64)", nameEn: "Employment rate (20–64)", topic: "employment" },
+  { slug: "investment", name: "Investicije u fiksni kapital", nameEn: "Gross fixed capital formation", topic: "economy" },
+  { slug: "exports", name: "Izvoz robe i usluga", nameEn: "Exports of goods and services", topic: "international" },
+  { slug: "imports", name: "Uvoz robe i usluga", nameEn: "Imports of goods and services", topic: "international" },
+  { slug: "government-revenue", name: "Prihodi opće države", nameEn: "Government revenue", topic: "public-finances" },
+  { slug: "government-expenditure", name: "Rashodi opće države", nameEn: "Government expenditure", topic: "public-finances" },
+  { slug: "income-inequality", name: "Dohodovna nejednakost (Gini)", nameEn: "Income inequality (Gini)", topic: "prices" },
+  { slug: "overcrowding", name: "Prenapučenost stanova", nameEn: "Overcrowding rate", topic: "housing" },
+  { slug: "food-inflation", name: "Inflacija hrane i bezalkoholnih pića", nameEn: "Food and non-alcoholic beverage inflation", topic: "prices" },
+  { slug: "household-energy-inflation", name: "Inflacija energije za stanovanje", nameEn: "Household energy inflation", topic: "prices" },
+  { slug: "nominal-net-wages", name: "Prosječna neto plaća (nominalno)", nameEn: "Average net earnings (nominal)", topic: "employment" },
+  { slug: "nominal-gross-wages", name: "Prosječna bruto plaća (nominalno)", nameEn: "Average gross earnings (nominal)", topic: "employment" },
+];
+
+export const indicators: Indicator[] = [
+  ...plannedIndicators.map((indicator) => {
+    const def = seriesDefinitions.find((item) => item.slug === indicator.slug);
+    return def ? { ...indicator, unit: def.unit, frequency: def.frequency, description: def.definition } : indicator;
+  }),
+  ...additionalIndicators.map((indicator) => {
+    const def = seriesDefinitions.find((item) => item.slug === indicator.slug)!;
+    return { ...indicator, unit: def.unit, frequency: def.frequency, description: def.definition };
+  }),
+];
+
 export const featuredIndicators = [
   "real-gdp-growth",
   "gdp-per-capita-pps",
   "hicp",
   "unemployment",
-  "real-wages",
+  "nominal-net-wages",
   "government-debt",
   "population",
   "fertility",

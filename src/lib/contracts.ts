@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-// Phase 2 adapter boundary; missing observations are omitted rather than coerced to zero.
+// Missing observations are omitted rather than coerced to zero.
 export const observationInputSchema = z
   .object({
     indicatorId: z.string().min(1),
@@ -15,6 +15,7 @@ export const observationInputSchema = z
     publicationDate: z.iso.date().nullable(),
     retrievedAt: z.iso.datetime({ offset: true }),
     observationStatus: z.enum(["FINAL", "PROVISIONAL", "REVISED"]),
+    sourceFlags: z.string().optional(),
     revisionId: z.string().min(1),
     methodologyVersion: z.string().min(1),
   })
@@ -22,6 +23,13 @@ export const observationInputSchema = z
   .refine((observation) => observation.periodEnd >= observation.periodStart, {
     message: "Period end must not precede period start.",
     path: ["periodEnd"],
-  });
+  })
+  .refine(({ periodStart, periodEnd, frequency }) => {
+    const start = new Date(periodStart);
+    const months = { MONTHLY: 1, QUARTERLY: 3, ANNUAL: 12 }[frequency];
+    const month = start.getUTCMonth();
+    const end = new Date(Date.UTC(start.getUTCFullYear(), month + months, 0));
+    return start.getUTCDate() === 1 && month % months === 0 && end.toISOString().slice(0, 10) === periodEnd;
+  }, { message: "Reference period must align with its frequency.", path: ["periodStart"] });
 
 export type ObservationInput = z.infer<typeof observationInputSchema>;
