@@ -1,7 +1,7 @@
 import { expect, test } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
 
-test("dashboard is honest about unavailable data and links to a definition", async ({
+test("dashboard shows published statistics or honest empty states and links to a definition", async ({
   page,
 }, testInfo) => {
   const errors: string[] = [];
@@ -10,7 +10,8 @@ test("dashboard is honest about unavailable data and links to a definition", asy
   await expect(
     page.getByRole("heading", { name: "Politička slika Hrvatske" }),
   ).toBeVisible();
-  await expect(page.getByRole("status")).toContainText("Nacionalni podaci još nisu povezani");
+  const published = (await page.getByRole("status").textContent())?.includes("pokazatelja s objavljenim opažanjima");
+  await expect(page.getByRole("status")).toContainText(published ? "uspješna provjera" : "Nacionalni podaci još nisu povezani");
   const government = page.getByRole("heading", {
     name: "Aktualna Vlada",
     exact: true,
@@ -46,7 +47,7 @@ test("dashboard is honest about unavailable data and links to a definition", asy
       portrait.evaluate((image) => (image as HTMLImageElement).naturalWidth),
     )
     .toBeGreaterThan(0);
-  await expect(page.getByLabel("Vrijednost nije dostupna", { exact: true })).toHaveCount(8);
+  if (!published) await expect(page.getByLabel("Vrijednost nije dostupna", { exact: true })).toHaveCount(8);
   await page.screenshot({
     path: `test-results/home-${testInfo.project.name}.png`,
     fullPage: true,
@@ -61,7 +62,12 @@ test("dashboard is honest about unavailable data and links to a definition", asy
   await expect(
     page.getByRole("heading", { name: "Realni rast BDP-a", exact: true }),
   ).toBeVisible();
-  await expect(page.getByRole("heading", { name: "Nema usporedivih podataka" }).first()).toBeVisible();
+  if (published) {
+    await expect(page.locator("#real-gdp-growth")).toContainText("Objavljena serija");
+    await expect(page.locator("#real-gdp-growth").getByText("Tablični prikaz podataka")).toBeVisible();
+  } else {
+    await expect(page.getByRole("heading", { name: "Nema usporedivih podataka" }).first()).toBeVisible();
+  }
   expect(errors).toEqual([]);
 });
 

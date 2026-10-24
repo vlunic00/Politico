@@ -11,11 +11,13 @@ import {
   YAxis,
 } from "recharts";
 import { EmptyState } from "./empty-state";
+import { formatNumber } from "@/lib/statistics/series";
 
 export type ChartPoint = {
   period: string;
   croatia: number | null;
   eu: number | null;
+  flags?: string;
 };
 
 export function MetricLineChart({
@@ -66,7 +68,6 @@ export function MetricLineChart({
               dy={8}
             />
             <YAxis
-              unit={` ${unit}`}
               tickLine={false}
               axisLine={false}
               tick={{ fontSize: 10, fill: "#626b77" }}
@@ -127,6 +128,7 @@ export function MetricLineChart({
                 <th scope="col" className="p-2">
                   EU-27 ({unit})
                 </th>
+                <th scope="col" className="p-2">Oznake izvora</th>
               </tr>
             </thead>
             <tbody>
@@ -135,8 +137,9 @@ export function MetricLineChart({
                   <th scope="row" className="p-2 font-normal">
                     {point.period}
                   </th>
-                  <td className="p-2">{point.croatia ?? "Nije dostupno"}</td>
-                  <td className="p-2">{point.eu ?? "Nije dostupno"}</td>
+                  <td className="p-2">{point.croatia === null ? "Nije dostupno" : formatNumber(point.croatia)}</td>
+                  <td className="p-2">{point.eu === null ? "Nije dostupno" : formatNumber(point.eu)}</td>
+                  <td className="p-2">{point.flags ?? ""}</td>
                 </tr>
               ))}
             </tbody>

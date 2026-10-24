@@ -54,7 +54,7 @@ export default function MethodologyPage() {
         <h2 className="section-title">Dostupnost i ispravci</h2>
         <p className="subtle mt-3">
           Ovo je razvojna verzija. Politički pregled koristi ručno provjerene,
-          datirane službene izvore, a nacionalne statističke serije i AI sažeci
+          datirane službene izvore. Statističke serije dolaze iz Eurostata i DZS-a uz validaciju, snimke izvora i oznake statusa. AI sažeci
           još nisu povezani. Parlamentarna evidencija nije cjelovit registar
           stranaka niti potvrda izborne kandidature. Javni kanal za prijavu
           ispravaka bit će objavljen prije javnog izdanja.

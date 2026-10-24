@@ -39,7 +39,7 @@ const icons = {
   Users,
 };
 
-export function TopicCard({ topic }: { topic: (typeof topics)[number] }) {
+export function TopicCard({ topic, activeCount = 0 }: { topic: (typeof topics)[number]; activeCount?: number }) {
   const Icon = icons[topic.icon];
   const count = indicators.filter(
     (indicator) => indicator.topic === topic.slug,
@@ -62,7 +62,7 @@ export function TopicCard({ topic }: { topic: (typeof topics)[number] }) {
       <h3 className="font-semibold tracking-tight">{topic.name}</h3>
       <p className="subtle mt-1 flex-1 text-xs">{topic.description}</p>
       <p className="mt-5 border-t pt-3 text-[11px] text-muted-foreground">
-        {count} planirana pokazatelja · čeka provjeru
+        {activeCount} aktivnih / {count} pokazatelja
       </p>
     </Link>
   );

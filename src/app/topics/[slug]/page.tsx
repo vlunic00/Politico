@@ -5,11 +5,14 @@ import { Breadcrumb, PageHeading } from "@/components/page-heading";
 import { MetricLineChart } from "@/components/metric-line-chart";
 import { SourcePopover } from "@/components/source-popover";
 import { frequencyLabels, indicators, topics } from "@/lib/catalogue";
+import { getStatistics } from "@/lib/statistics/data";
+import { formatDate, formatNumber, formatPeriod } from "@/lib/statistics/series";
 
 export function generateStaticParams() {
   return topics.map(({ slug }) => ({ slug }));
 }
 export const dynamicParams = false;
+export const dynamic = "force-dynamic";
 
 export async function generateMetadata({
   params,
@@ -32,6 +35,7 @@ export default async function TopicPage({
   const { slug } = await params;
   const topic = topics.find((item) => item.slug === slug);
   if (!topic) notFound();
+  const statistics = await getStatistics();
   const entries = indicators.filter(
     (indicator) => indicator.topic === topic.slug,
   );
@@ -55,7 +59,9 @@ export default async function TopicPage({
         ))}
       </div>
       <div className="space-y-6">
-        {entries.map((indicator) => (
+        {entries.map((indicator) => {
+          const series = statistics.series[indicator.slug];
+          return (
           <article
             id={indicator.slug}
             key={indicator.slug}
@@ -64,16 +70,16 @@ export default async function TopicPage({
             <div className="mb-5 flex flex-wrap items-start justify-between gap-4">
               <div>
                 <h2 className="section-title">{indicator.name}</h2>
-                <p className="subtle mt-2 max-w-2xl">{indicator.description}</p>
+                <p className="subtle mt-2 max-w-2xl">{series?.definition ?? indicator.description}</p>
               </div>
-              <Badge variant="secondary">Čeka provjeru</Badge>
+              <Badge variant="secondary">{series ? "Objavljena serija" : "Čeka provjeru"}</Badge>
             </div>
             <dl className="mb-6 grid gap-4 rounded-xl bg-background p-4 text-xs sm:grid-cols-4">
               {[
-                ["Jedinica", indicator.unit],
+                ["Jedinica", series?.unit ?? indicator.unit],
                 ["Učestalost", frequencyLabels[indicator.frequency]],
-                ["Obuhvat", "Hrvatska · EU nakon provjere"],
-                ["Referentno razdoblje", "Nije dostupno"],
+                ["Obuhvat", series ? (series.eu ? "Hrvatska · EU-27" : "Hrvatska; EU nije usporediv") : "Hrvatska · EU nakon provjere"],
+                ["Referentno razdoblje", series ? formatPeriod(series.latest.periodStart, series.frequency, series.slug) : "Nije dostupno"],
               ].map(([label, value]) => (
                 <div key={label}>
                   <dt className="text-muted-foreground">{label}</dt>
@@ -81,12 +87,20 @@ export default async function TopicPage({
                 </div>
               ))}
             </dl>
-            <MetricLineChart title={indicator.name} unit={indicator.unit} />
+            {series && <div className="mb-5 space-y-2 text-sm">
+              <p className="text-2xl font-semibold">{formatNumber(series.latest.value)} <span className="text-sm font-normal">{series.unit}</span></p>
+              <p>{series.change ? `${series.change.value > 0 ? "+" : ""}${formatNumber(series.change.value)} ${series.change.unit} prema ${series.change.baseline}` : "Promjena nije usporediva"}</p>
+              <p className="subtle">Posljednja uspješna provjera: {formatDate(series.source.checkedAt)}. Preuzeto: {formatDate(series.source.retrievedAt)}.</p>
+              <p className="subtle">{series.limitations}</p>
+              {!series.eu && <p className="subtle">Nema usporedivih podataka za EU u posljednjem razdoblju.</p>}
+            </div>}
+            <MetricLineChart title={indicator.name} unit={series?.unit ?? indicator.unit} points={series?.points} />
+            {series && <p className="subtle mt-4">Oznake izvora: p = privremeno, e = procjena, r = revidirano, b = prekid serije, d = različita definicija. Ostale oznake pogledajte u izvornom skupu. Promjena se uspoređuje s istim razdobljem prethodne godine; p. b. znači postotni bod. Preko označenog prekida ne računamo promjenu.</p>}
             <div className="mt-5 border-t pt-4">
-              <SourcePopover />
+              <SourcePopover source={series?.source} />
             </div>
           </article>
-        ))}
+        ); })}
       </div>
     </>
   );

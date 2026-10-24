@@ -2,6 +2,10 @@ import type { Metadata } from "next";
 import { ExternalLink } from "lucide-react";
 import { PageHeading } from "@/components/page-heading";
 import { sources } from "@/lib/catalogue";
+import { indicators } from "@/lib/catalogue";
+import { getStatistics } from "@/lib/statistics/data";
+import { datasetUrl, seriesDefinitions } from "@/lib/statistics/definitions";
+import { formatDate } from "@/lib/statistics/series";
 import {
   parliamentarySnapshot,
   politicalVerificationDate,
@@ -10,7 +14,9 @@ import {
 
 export const metadata: Metadata = { title: "Katalog izvora" };
 
-export default function SourcesPage() {
+export const dynamic = "force-dynamic";
+export default async function SourcesPage() {
+  const { series, runs } = await getStatistics();
   return (
     <>
       <PageHeading
@@ -30,7 +36,7 @@ export default function SourcesPage() {
                 {source.shortName}
               </span>
               <span className="text-[11px] text-muted-foreground">
-                Nije povezano
+                {Object.values(series).some((s) => s.source.name === source.name) ? "Povezano" : "Nije povezano"}
               </span>
             </div>
             <h2 className="section-title">{source.name}</h2>
@@ -46,12 +52,26 @@ export default function SourcesPage() {
                 <ExternalLink size={13} aria-hidden="true" />
               </a>
               <span className="text-[11px] text-muted-foreground">
-                Posljednji uvoz: nije proveden
+                Posljednja uspješna provjera: {formatDate(Object.values(series).filter((s) => s.source.name === source.name).map((s) => s.source.checkedAt).filter((v): v is string => !!v).sort().at(-1))}
               </span>
             </div>
           </article>
         ))}
       </div>
+      <section className="surface mt-6 p-6">
+        <h2 className="section-title">Statistički skupovi i stanje uvoza</h2>
+        <p className="subtle mt-3">Datum objave, ažuriranje izvora i uspješna provjera prikazuju se odvojeno. Neuspješan uvoz ili pregled ne mijenja prethodno objavljenu seriju.</p>
+        <ul className="mt-4 divide-y">
+          {seriesDefinitions.map((def) => {
+            const run = runs.find((r) => r.id === `${def.source}:${def.slug}`);
+            return <li key={def.slug} className="flex flex-wrap justify-between gap-3 py-4 text-xs">
+              <div><a href={datasetUrl(def)} className="text-link" target="_blank" rel="noreferrer">{indicators.find((i) => i.slug === def.slug)?.name} ↗</a>
+                <p className="mt-1 break-words text-muted-foreground">{def.source === "dzs" ? "DZS" : "Eurostat"} · {def.dataset}</p></div>
+              <p className="text-muted-foreground">{run?.status === "NEEDS_REVIEW" ? "Novi uvoz čeka pregled" : run?.status === "FAILED" ? "Posljednji uvoz nije uspio" : series[def.slug] ? "Objavljeno" : "Nije uvezeno"} · {formatDate(run?.finishedAt)}</p>
+            </li>;
+          })}
+        </ul>
+      </section>
       <section className="surface mt-6 p-6">
         <h2 className="section-title">Politički presjek</h2>
         <p className="subtle mt-3">

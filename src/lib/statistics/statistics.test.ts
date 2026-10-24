@@ -3,6 +3,7 @@ import { observationInputSchema } from "../contracts";
 import { datasetUrl, seriesDefinitions } from "./definitions";
 import { dzsQuery, parseDzs, parseEurostat, referencePeriod, type Snapshot } from "./adapters";
 import { reviewReasons } from "./ingestion";
+import { buildSeries, sparklinePath, type PublishedPoint, type Series } from "./series";
 import { cubeSnapshot } from "../../fixtures/statistics";
 
 const def = seriesDefinitions.find((d) => d.slug === "population")!;
@@ -81,5 +82,29 @@ describe("reference periods and publication guards", () => {
     expect(reviewReasons({ ...def, minimumHistory: 2 }, incoming.slice(1), incoming).some((s) => s.includes("missing"))).toBe(true);
     expect(reviewReasons(def, incoming.map((p) => ({ ...p, value: p.value * 2 })), incoming).some((s) => s.includes("Large historical revision"))).toBe(true);
     expect(() => reviewReasons(def, [...incoming, incoming[0]], [])).toThrow(/Duplicate/);
+  });
+});
+
+const source: Series["source"] = { name: "Test", url: "https://example.org", publicationDate: null, retrievedAt: "2026-01-01T00:00:00Z", updatedAt: null, checkedAt: null, methodologyUrl: "https://example.org", dataset: "test", revision: "test" };
+function point(year: number, value: number, overrides: Partial<PublishedPoint> = {}): PublishedPoint {
+  return { geographyId: "HR", ...referencePeriod(String(year), "ANNUAL"), value, unit: "%", frequency: "ANNUAL", methodologyVersion: "v1", sourceFlags: "", observationStatus: "FINAL", ...overrides };
+}
+const rate = { ...def, unit: "%", change: "points" as const };
+
+describe("published time series", () => {
+  it("distinguishes percentage points from percentages and aligns EU periods", () => {
+    const data = [point(2024, 10), point(2025, 12), point(2025, 13, { geographyId: "EU27_2020" })];
+    expect(buildSeries(rate, data, source)?.change?.value).toBe(2);
+    expect(buildSeries({ ...rate, change: "percent" }, data, source)?.change?.value).toBe(20);
+    expect(buildSeries(rate, data, source)?.eu?.value).toBe(13);
+    for (const override of [{ unit: "EUR" }, { frequency: "MONTHLY" as const }, { methodologyVersion: "v2" }, { periodEnd: "2025-06-30" }, { sourceFlags: "d" }])
+      expect(buildSeries(rate, [...data.slice(0, 2), { ...data[2], ...override }], source)?.eu).toBeNull();
+  });
+  it("keeps gaps, refuses stale EU values, zero denominators and changes across breaks", () => {
+    expect(buildSeries(rate, [point(2023, 10), point(2025, 12)], source)?.points[1].croatia).toBeNull();
+    expect(buildSeries(rate, [point(2024, 10, { geographyId: "EU27_2020" }), point(2025, 12)], source)?.eu).toBeNull();
+    expect(buildSeries({ ...rate, change: "percent" }, [point(2024, 0), point(2025, 12)], source)?.change).toBeNull();
+    expect(buildSeries(rate, [point(2024, 10), point(2025, 12, { sourceFlags: "b" })], source)?.change).toBeNull();
+    expect(sparklinePath([1, null, 2])).toMatch(/^M.* M/);
   });
 });

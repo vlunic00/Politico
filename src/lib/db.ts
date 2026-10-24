@@ -15,6 +15,6 @@ export function getDb() {
         connectionTimeoutMillis: 5000,
       }),
     });
-  if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = db;
+  globalForPrisma.prisma = db;
   return db;
 }

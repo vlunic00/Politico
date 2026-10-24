@@ -1,10 +1,16 @@
 import { ExternalLink } from "lucide-react";
+import { formatDate } from "@/lib/statistics/series";
 
 export type SourceReference = {
   name: string;
   url: string;
   publicationDate: string | null;
   retrievedAt: string;
+  updatedAt?: string | null;
+  checkedAt?: string | null;
+  methodologyUrl?: string;
+  dataset?: string;
+  revision?: string;
 };
 
 export function SourcePopover({ source }: { source?: SourceReference }) {
@@ -24,8 +30,13 @@ export function SourcePopover({ source }: { source?: SourceReference }) {
             >
               Izvorna objava <ExternalLink size={12} aria-hidden="true" />
             </a>
-            <p>Objavljeno: {source.publicationDate ?? "nije navedeno"}</p>
-            <p>Preuzeto: {source.retrievedAt}</p>
+            <p>Objavljeno: {formatDate(source.publicationDate)}</p>
+            <p>Preuzeto: {formatDate(source.retrievedAt)}</p>
+            {source.updatedAt && <p>Izvor ažuriran: {formatDate(source.updatedAt)}</p>}
+            {source.checkedAt && <p>Posljednja uspješna provjera: {formatDate(source.checkedAt)}</p>}
+            {source.dataset && <p className="break-words">Skup podataka: {source.dataset}</p>}
+            {source.methodologyUrl && <a href={source.methodologyUrl} className="text-link mt-2 text-xs" target="_blank" rel="noreferrer">Metodologija izvora ↗</a>}
+            {source.revision && <p className="mt-2 break-all">SHA-256: {source.revision}</p>}
           </>
         ) : (
           <p>
