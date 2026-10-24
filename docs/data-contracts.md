@@ -1,43 +1,41 @@
-# Phase 2 database contracts
+# Statistical database contracts
 
-The initial migration defines the statistical foundation only. Later political and editorial entities are deliberately deferred to their implementation phases.
-
-## Relationships
+The statistical foundation is PostgreSQL and Prisma. Political/editorial entities belong to later phases.
 
 ```text
 Topic → IndicatorDefinition → IndicatorObservation ← GeographicArea
 DataSource → SourceDataset → SourceRevision → IndicatorObservation
 SourceDataset → IngestionRun
-SourceDataset → IndicatorDefinition (after verification)
 ```
 
-An observation's source and dataset are resolved through its immutable revision. This avoids storing conflicting source identifiers in multiple columns. `ObservationInput` in `src/lib/contracts.ts` is the future adapter boundary; its source/dataset IDs must be checked against that revision when an adapter is implemented.
+## Publication and revisions
 
-## Definitions and coverage
+`ObservationInput` in `src/lib/contracts.ts` validates finite numeric values, provenance, ISO dates and complete calendar-aligned annual, quarterly or monthly periods. Missing observations are omitted; zero is a value. Adapters verify source-specific dimensions, frequency, units, geography and structure before storage. Source/dataset relationships come from the configured revision, not external payloads.
 
-Topic and indicator identifiers use stable slugs. Definitions have Croatian and English names, units, frequency, geographic coverage, optional source dataset and comparator, interpretation rules, limitations and minimum historical coverage. Every seeded definition is `AWAITING_VERIFICATION`. Candidate definitions and frequencies are planning metadata; dataset dimensions and precise methodology still require source verification.
+Every source selection has a stable dataset ID (`eurostat:<indicator>` or `dzs:<indicator>`). Snapshots contain the exact URL, POST body when applicable, metadata and raw response. SHA-256 covers the definition, request, metadata and response; retrieval timestamps are excluded so reruns are idempotent. Existing snapshot files are hash-checked before reuse. `DATA_SNAPSHOT_DIR` must be durable for production imports.
 
-An indicator may become `ACTIVE` only after its dataset, methodology URL, unit, geographic dimensions, frequency, historical requirements and interpretation notes are verified. `UNAVAILABLE` records a documented lack of suitable data. Do not convert related but different concepts into one series.
+An ingestion run records start, finish, state, staged count, published count and error/review reasons. Network/parse/validation failures do not modify observations. A transaction, protected by a per-dataset PostgreSQL advisory lock, persists an immutable revision and observations, then publishes only if checks pass. Concurrent identical imports create one revision. An older previously published snapshot reappearing is flagged rather than treated as a successful current update.
 
-## Observations and revisions
+`publishedAt = null` means staged and never public. Public queries select the newest **whole published revision** for each active indicator, then read published observations from that revision. They do not merge revisions or silently backfill missing history from an old revision. Older published and staged records remain available for audit.
 
-- Dates are PostgreSQL `date`; retrieval and publication events use time-zone-aware timestamps. Reference periods are explicit start/end dates.
-- Values are `Decimal(24, 8)`. Missing observations are omitted, never coerced to zero. Zero is a valid observation.
-- Revision IDs retain historical values. The composite unique key covers indicator, geography, period and revision; queries must deliberately select the published revision instead of aggregating revisions together.
-- `publishedAt = null` means staged, not public. Only approved observations with a publication timestamp may be queried for the public data layer in Phase 2.
-- `FINAL`, `PROVISIONAL` and `REVISED` statuses remain available. A missing publication date stays null; it is not replaced by retrieval time.
-- Each revision records a dataset, content hash, retrieval timestamp and snapshot location. Preserve a licensed snapshot or equivalent reproducible source record.
-- Foreign-key deletion uses `Restrict` for sourced records, so deleting a source cannot silently remove observations.
+Large revisions, missing historical cells, short Croatian histories, large time-series changes and regressing upstream timestamps require review. Empty imports always fail. A maintainer can inspect a revision with `npm run data:import -- --review <id>` and publish it with the additional `--publish` flag. Publication creates an explicit review entry in ingestion history. Minimum history, matching definitions and protection against publishing behind a newer retrieval still apply. There is no public review endpoint.
 
-The Zod boundary rejects invalid dates, reversed periods, missing provenance, numeric strings, nulls and non-finite values. Full frequency alignment, source dimensions, unit compatibility, revision publication and anomaly checks must be implemented and tested with the first adapter; the initial contract alone is not an ingestion pipeline.
+## Metadata
 
-## Import rules for the first adapter
+- Values use `Decimal(24,8)`; period boundaries and publication dates use PostgreSQL `date`.
+- Retrieval, source update, ingestion and publication events use timezone-aware timestamps.
+- `SourceRevision.sourceUpdatedAt` is the upstream dataset update timestamp, **not** an observation publication date.
+- Unknown original publication dates stay null and are never replaced by retrieval time.
+- Last successful check comes from the latest successful ingestion run, including unchanged responses. Current failed/review state is separately visible in the source catalogue.
+- `sourceFlags` preserves raw flags, including estimates and breaks. `p`/`e` map to provisional, `r` to revised. `FINAL` means no provisional/revision marker was supplied, not that future revision is impossible.
+- Foreign keys restrict deletion of sourced records. Imports and seeds never delete observations.
 
-1. Validate source structure and dataset metadata before staging.
-2. Persist source revision and validated staging records in a transaction.
-3. Preserve previous published observations when fetching or validation fails.
-4. Record run status and separate staged/published counts; suspicious changes require review.
-5. Compare only compatible definitions, periods, units and geographies. Use a published EU aggregate.
-6. Expose actual publication, retrieval and last-successful-update dates separately.
+The additive Phase 2 migration adds upstream update timestamps and raw flags without resetting foundation tables. The seed inserts missing definitions and preserves verification work and observations.
 
-The seed is transactional and repeatable. It upserts topics and institutions, inserts missing planned indicators without overwriting later verification work, and does not insert or delete observations. The frontend intentionally does not consume the database until those publication rules exist.
+## Comparisons
+
+Croatia and the published `EU27_2020` aggregate must have identical period boundaries, frequency, unit and methodology version. Different-definition flags suppress comparisons. A missing current EU period stays missing; an older EU value is never relabelled as current. Charts insert null points for missing periods without interpolation or lines across gaps.
+
+Changes compare with the same period one year earlier, require the same methodology, and are suppressed across flagged breaks/different definitions. Rate differences use percentage points; Gini uses points. Level/index changes use percentages and reject a zero denominator. Population is explicitly the count on 1 January, not a calendar-year average. No trend colors or government scores are inferred from numerical direction.
+
+See [source definitions](./statistical-sources.md) and the generated [coverage report](./coverage.md).

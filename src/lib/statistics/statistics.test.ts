@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import { observationInputSchema } from "../contracts";
 import { datasetUrl, seriesDefinitions } from "./definitions";
 import { dzsQuery, parseDzs, parseEurostat, referencePeriod, type Snapshot } from "./adapters";
+import { reviewReasons } from "./ingestion";
 import { cubeSnapshot } from "../../fixtures/statistics";
 
 const def = seriesDefinitions.find((d) => d.slug === "population")!;
@@ -72,5 +73,13 @@ describe("reference periods and publication guards", () => {
     expect(() => referencePeriod("2024-13", "MONTHLY")).toThrow();
     const observation = parseEurostat(def, cubeSnapshot()).observations[0];
     expect(observationInputSchema.safeParse({ ...observation, periodEnd: "2024-06-30" }).success).toBe(false);
+  });
+  it("stages short histories, disappeared observations and large revisions; rejects duplicate cells", () => {
+    const incoming = parseEurostat(def, cubeSnapshot()).observations;
+    expect(reviewReasons(def, incoming, [])).toContain("Croatian history requires 5 observations; received 2.");
+    expect(reviewReasons({ ...def, minimumHistory: 2 }, incoming, [])).toEqual([]);
+    expect(reviewReasons({ ...def, minimumHistory: 2 }, incoming.slice(1), incoming).some((s) => s.includes("missing"))).toBe(true);
+    expect(reviewReasons(def, incoming.map((p) => ({ ...p, value: p.value * 2 })), incoming).some((s) => s.includes("Large historical revision"))).toBe(true);
+    expect(() => reviewReasons(def, [...incoming, incoming[0]], [])).toThrow(/Duplicate/);
   });
 });

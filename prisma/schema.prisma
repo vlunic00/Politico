@@ -71,6 +71,7 @@ model SourceRevision {
   snapshotPath      String
   retrievedAt       DateTime               @db.Timestamptz(3)
   publicationDate   DateTime?              @db.Date
+  sourceUpdatedAt   DateTime?              @db.Timestamptz(3)
   observations      IndicatorObservation[]
 
   @@unique([sourceDatasetId, contentHash])
@@ -121,6 +122,7 @@ model IndicatorObservation {
   publicationDate    DateTime?           @db.Date
   retrievedAt        DateTime            @db.Timestamptz(3)
   observationStatus  ObservationStatus
+  sourceFlags        String              @default("")
   revisionId         String
   revision           SourceRevision      @relation(fields: [revisionId], references: [id], onDelete: Restrict)
   methodologyVersion String

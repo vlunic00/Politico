@@ -1,6 +1,6 @@
 # Statistical source mappings
 
-Verified against live official responses on 24 October 2026. Executable selections and Croatian definitions are in [`definitions.ts`](../src/lib/statistics/definitions.ts); the catalogue supplies bilingual names. All active series have explicit units, frequency, limits, minimum history and methodology links.
+Verified against live official responses on 24 October 2026. Executable selections and Croatian definitions are in [`definitions.ts`](../src/lib/statistics/definitions.ts); the catalogue supplies bilingual names. All active series have explicit units, frequency, limits, minimum history and methodology links. Refresh the current state with `npm run data:coverage`.
 
 ## Eurostat
 
@@ -47,3 +47,9 @@ The [official PxWeb endpoint](https://web.dzs.hr/PXWeb/api/v1/en/) supplies meta
 The adapter checks every returned key and separates documented missing markers from numeric zero. Currency and population coverage were verified against the [official earnings release and methodology](https://podaci.dzs.hr/2026/en/121344); snapshots retain metadata and data. PxWeb's update timestamp is preserved as supplied and is not treated as a release date.
 
 These are nominal averages, not medians, not real wages and not all employed persons. The old activity classification is not concatenated with NKD 2025. No EU wage comparator is attached. Real wages remain an unconnected definition.
+
+## Review and operations
+
+Initial tourism data are staged because pandemic-era year-on-year changes exceed the conservative anomaly threshold. Review the source snapshot and documented context before explicit publication; no exception bypass is coded. Other candidates without a verified adapter remain pending, including county statistics and election-related data reserved for later phases.
+
+Imports are explicit CLI jobs, not page-load fetches. Scheduling, object storage, an authenticated review UI and production deployment remain later work. Keep PostgreSQL and the snapshot directory backed up together. Source-link checks and a live import were run during implementation; future source availability is not guaranteed.

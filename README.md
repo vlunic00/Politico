@@ -86,3 +86,9 @@ Framework setup follows the official [Next.js installation](https://nextjs.org/d
 ## Sourced political overview
 
 The overview now opens with the current-government hero and parliamentary party cards. Party profiles, leadership, portraits, parliamentary shares and search use the dated records in src/lib/politics.ts. See docs/political-sources.md for provenance and image credits. National statistics remain unavailable until validated imports are connected.
+
+## Statistical ingestion backend
+
+Apply migrations and seed metadata with npm run db:deploy and npm run db:seed. Use npm run data:import to fetch and validate official data, and npm run data:coverage to refresh coverage. Review a staged revision with npm run data:import -- --review <id>; explicit publication adds --publish. Keep DATA_SNAPSHOT_DIR on durable storage. The UI is still metadata-only at this step; published series are ready for the next integration.
+
+Run npm run test:ingestion to test against an isolated PostgreSQL schema.
