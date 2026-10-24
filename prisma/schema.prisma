@@ -1,0 +1,143 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Frequency {
+  MONTHLY
+  QUARTERLY
+  ANNUAL
+}
+
+enum CoverageStatus {
+  AWAITING_VERIFICATION
+  ACTIVE
+  UNAVAILABLE
+}
+
+enum ObservationStatus {
+  FINAL
+  PROVISIONAL
+  REVISED
+}
+
+enum IngestionStatus {
+  RUNNING
+  SUCCEEDED
+  NEEDS_REVIEW
+  FAILED
+}
+
+model Topic {
+  id          String                @id
+  slug        String                @unique
+  nameHr      String
+  nameEn      String
+  description String
+  indicators  IndicatorDefinition[]
+}
+
+model DataSource {
+  id          String          @id
+  name        String
+  url         String
+  datasets    SourceDataset[]
+}
+
+model SourceDataset {
+  id                String                @id @default(cuid())
+  sourceId          String
+  source            DataSource            @relation(fields: [sourceId], references: [id], onDelete: Restrict)
+  externalId        String
+  url               String
+  methodologyUrl    String
+  license           String?
+  revisions         SourceRevision[]
+  indicators        IndicatorDefinition[]
+  ingestionRuns     IngestionRun[]
+
+  @@unique([sourceId, externalId])
+}
+
+model SourceRevision {
+  id                String                 @id @default(cuid())
+  sourceDatasetId   String
+  sourceDataset     SourceDataset          @relation(fields: [sourceDatasetId], references: [id], onDelete: Restrict)
+  contentHash       String
+  snapshotPath      String
+  retrievedAt       DateTime               @db.Timestamptz(3)
+  publicationDate   DateTime?              @db.Date
+  observations      IndicatorObservation[]
+
+  @@unique([sourceDatasetId, contentHash])
+}
+
+model GeographicArea {
+  id           String                 @id
+  nameHr       String
+  nameEn       String
+  level        String
+  validFrom    DateTime?              @db.Date
+  validTo      DateTime?              @db.Date
+  observations IndicatorObservation[]
+}
+
+model IndicatorDefinition {
+  id                     String                 @id
+  slug                   String                 @unique
+  topicId                String
+  topic                  Topic                  @relation(fields: [topicId], references: [id], onDelete: Restrict)
+  nameHr                 String
+  nameEn                 String
+  definition             String
+  unit                   String
+  frequency              Frequency
+  geographicCoverage     String[]
+  sourceDatasetId        String?
+  sourceDataset          SourceDataset?         @relation(fields: [sourceDatasetId], references: [id], onDelete: Restrict)
+  preferredComparator    String?
+  interpretationRule     String?
+  limitations            String?
+  minimumHistoryPeriods  Int?
+  coverageStatus         CoverageStatus         @default(AWAITING_VERIFICATION)
+  observations           IndicatorObservation[]
+}
+
+model IndicatorObservation {
+  id                 String              @id @default(cuid())
+  indicatorId        String
+  indicator          IndicatorDefinition @relation(fields: [indicatorId], references: [id], onDelete: Restrict)
+  geographyId        String
+  geography          GeographicArea      @relation(fields: [geographyId], references: [id], onDelete: Restrict)
+  periodStart        DateTime            @db.Date
+  periodEnd          DateTime            @db.Date
+  frequency          Frequency
+  value              Decimal             @db.Decimal(24, 8)
+  unit               String
+  publicationDate    DateTime?           @db.Date
+  retrievedAt        DateTime            @db.Timestamptz(3)
+  observationStatus  ObservationStatus
+  revisionId         String
+  revision           SourceRevision      @relation(fields: [revisionId], references: [id], onDelete: Restrict)
+  methodologyVersion String
+  publishedAt        DateTime?           @db.Timestamptz(3)
+
+  @@unique([indicatorId, geographyId, periodStart, periodEnd, revisionId])
+  @@index([indicatorId, geographyId, periodStart])
+}
+
+model IngestionRun {
+  id              String          @id @default(cuid())
+  sourceDatasetId String
+  sourceDataset   SourceDataset   @relation(fields: [sourceDatasetId], references: [id], onDelete: Restrict)
+  status          IngestionStatus @default(RUNNING)
+  startedAt       DateTime        @default(now()) @db.Timestamptz(3)
+  finishedAt      DateTime?       @db.Timestamptz(3)
+  recordsStaged   Int             @default(0)
+  recordsPublished Int            @default(0)
+  error          String?
+}
