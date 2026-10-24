@@ -82,3 +82,7 @@ npm run db:seed
 See [database contracts](./docs/data-contracts.md) and [coverage](./docs/coverage.md). Data adapters and import commands are intentionally deferred to Phase 2. The UI catalogue is static in Phase 1; database changes alone will not populate the dashboard. The party register, government history, AI summaries, admin, elections, regional maps, scheduling, S3 and deployment belong to subsequent phases.
 
 Framework setup follows the official [Next.js installation](https://nextjs.org/docs/app/getting-started/installation), [shadcn/ui installation](https://ui.shadcn.com/docs/installation/next), and [Prisma 7 client generation](https://www.prisma.io/docs/orm/v7/prisma-schema/overview/generators) documentation. Prisma is pinned to the stable 7.x series rather than the 8.x release candidate.
+
+## Sourced political overview
+
+The overview now opens with the current-government hero and parliamentary party cards. Party profiles, leadership, portraits, parliamentary shares and search use the dated records in src/lib/politics.ts. See docs/political-sources.md for provenance and image credits. National statistics remain unavailable until validated imports are connected.

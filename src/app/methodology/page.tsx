@@ -7,7 +7,7 @@ export const metadata: Metadata = { title: "Metodologija i ispravci" };
 const rules = [
   [
     "Provjerljivo ili nedostupno",
-    "Ne procjenjujemo nedostajuće podatke. Prazna vrijednost nije nula. Svaka buduća objavljena vrijednost mora imati izravan izvor, jedinicu, referentno razdoblje i datum provjere.",
+    "Ne procjenjujemo nedostajuće podatke. Prazna vrijednost nije nula. Svaka objavljena vrijednost ima izravan izvor, jedinicu, referentno razdoblje i datum provjere. Nepoznat datum izvorne objave ostaje nepoznat i ne zamjenjuje se datumom preuzimanja.",
   ],
   [
     "Usporediva razdoblja i definicije",
@@ -53,10 +53,11 @@ export default function MethodologyPage() {
       <section className="surface mt-6 p-7">
         <h2 className="section-title">Dostupnost i ispravci</h2>
         <p className="subtle mt-3">
-          Ovo je prva razvojna faza. Katalog sadrži planirane definicije, bez
-          objavljenih statistika, verificiranih stranačkih profila ili AI
-          sažetaka. Javni kanal za prijavu ispravaka bit će objavljen prije
-          javnog izdanja.
+          Ovo je razvojna verzija. Politički pregled koristi ručno provjerene,
+          datirane službene izvore, a nacionalne statističke serije i AI sažeci
+          još nisu povezani. Parlamentarna evidencija nije cjelovit registar
+          stranaka niti potvrda izborne kandidature. Javni kanal za prijavu
+          ispravaka bit će objavljen prije javnog izdanja.
         </p>
         <p className="subtle mt-3">
           Tijekom razvoja prijavite uočeni problem održavatelju repozitorija i

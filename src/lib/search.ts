@@ -1,4 +1,5 @@
 import { indicators, sources, topics } from "./catalogue";
+import { parliamentaryParties } from "./politics";
 
 export function normalizeSearch(value: string) {
   return value
@@ -13,6 +14,14 @@ export function searchCatalogue(query: string) {
   const normalized = normalizeSearch(query);
   if (!normalized) return [];
   return [
+    ...parliamentaryParties.map((party) => ({
+      title: `${party.name} (${party.abbreviation})`,
+      description:
+        party.leaders?.map((leader) => leader.name).join(", ") ??
+        "Parlamentarna stranka iz datiranog presjeka",
+      href: `/parties/${party.slug}`,
+      type: "Stranka",
+    })),
     ...topics.map((topic) => ({
       title: topic.name,
       description: topic.description,

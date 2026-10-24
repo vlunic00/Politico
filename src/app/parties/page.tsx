@@ -3,6 +3,8 @@ import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { PageHeading } from "@/components/page-heading";
 import { EmptyState } from "@/components/empty-state";
+import { PartyCard } from "@/components/party-card";
+import { parliamentaryParties, parliamentarySnapshot } from "@/lib/politics";
 
 export const metadata: Metadata = { title: "Političke stranke" };
 
@@ -14,16 +16,47 @@ export default function PartiesPage() {
         title="Imenik političkih stranaka"
         description="Registracija, parlamentarni status i izborna kandidatura različite su činjenice. Svaka zahtijeva vlastiti izvor."
       />
-      <section className="surface">
-        <div className="flex flex-wrap items-center justify-between gap-3 border-b px-6 py-5">
-          <h2 className="section-title">Sve registrirane stranke</h2>
+      <section aria-labelledby="parliamentary-directory">
+        <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
+          <h2 id="parliamentary-directory" className="section-title">
+            Parlamentarne stranke · {parliamentaryParties.length}
+          </h2>
           <span className="text-xs text-muted-foreground">
-            0 verificiranih zapisa
+            Abecedni redoslijed
+          </span>
+        </div>
+        <p className="subtle mb-6">
+          Presjek Hrvatskoga sabora: {parliamentarySnapshot.dateLabel}. Udjeli
+          se odnose na {parliamentarySnapshot.total} mandata u toj objavi i nisu
+          stanje uživo.{" "}
+          <a
+            href={parliamentarySnapshot.sourceUrl}
+            target="_blank"
+            rel="noreferrer"
+            className="text-primary underline underline-offset-4"
+          >
+            Izvor i metodologija nazivnika
+          </a>
+          .
+        </p>
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          {parliamentaryParties
+            .toSorted((a, b) => a.name.localeCompare(b.name, "hr"))
+            .map((party) => (
+              <PartyCard key={party.slug} party={party} />
+            ))}
+        </div>
+      </section>
+      <section className="surface mt-8">
+        <div className="flex flex-wrap items-center justify-between gap-3 border-b px-6 py-5">
+          <h2 className="section-title">Ostale registrirane stranke</h2>
+          <span className="text-xs text-muted-foreground">
+            Registar još nije povezan
           </span>
         </div>
         <EmptyState
           title="Službeni registar još nije povezan"
-          description="Imenik se popunjava službenim podacima u četvrtoj fazi. Izostanak zapisa ovdje ne znači da stranka nije registrirana."
+          description="Parlamentarni presjek nije cjelovit registar političkih stranaka. Izostanak stranke ovdje ne znači da nije registrirana."
         />
       </section>
       <div className="mt-6 grid gap-4 sm:grid-cols-3">

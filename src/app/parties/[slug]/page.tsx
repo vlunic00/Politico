@@ -2,11 +2,26 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Breadcrumb, PageHeading } from "@/components/page-heading";
 import { PartyProfile } from "@/components/party-profile";
+import { parliamentaryParties } from "@/lib/politics";
 
-export const metadata: Metadata = { title: "Predložak profila stranke" };
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
+  const { slug } = await params;
+  return {
+    title:
+      parliamentaryParties.find((party) => party.slug === slug)?.name ??
+      "Predložak profila stranke",
+  };
+}
 export const dynamicParams = false;
 export function generateStaticParams() {
-  return [{ slug: "preview" }];
+  return [
+    { slug: "preview" },
+    ...parliamentaryParties.map(({ slug }) => ({ slug })),
+  ];
 }
 
 export default async function PartyPage({
@@ -15,16 +30,23 @@ export default async function PartyPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  if (slug !== "preview") notFound();
+  const party = parliamentaryParties.find((party) => party.slug === slug);
+  if (slug !== "preview" && !party) notFound();
   return (
     <>
-      <Breadcrumb label="Predložak profila" />
+      <Breadcrumb label={party?.abbreviation ?? "Predložak profila"} />
       <PageHeading
-        eyebrow="Razvojni pregled"
-        title="Jednak prostor za svaku stranku"
-        description="Pregled strukture profila. Ova stranica ne predstavlja postojeću političku stranku."
+        eyebrow={
+          party ? "Parlamentarna stranka · datirani izvori" : "Razvojni pregled"
+        }
+        title={party?.name ?? "Jednak prostor za svaku stranku"}
+        description={
+          party
+            ? "Izvorni dokumenti, dostupne činjenice i jasno označene praznine u podacima."
+            : "Pregled strukture profila. Ova stranica ne predstavlja postojeću političku stranku."
+        }
       />
-      <PartyProfile />
+      <PartyProfile party={party} />
     </>
   );
 }

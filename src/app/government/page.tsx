@@ -14,9 +14,9 @@ export default function GovernmentPage() {
         title="Vlada Republike Hrvatske"
         description="Sastav, program i povijest administracija uz službenu dokumentaciju."
       />
-      <div className="grid gap-6 lg:grid-cols-[1.3fr_1fr]">
+      <div className="space-y-6">
         <GovernmentProfile />
-        <div className="space-y-6">
+        <div className="grid gap-6 lg:grid-cols-2">
           <section className="surface p-7">
             <p className="eyebrow mb-3">Kako tumačimo mandate</p>
             <h2 className="section-title">
@@ -57,8 +57,8 @@ export default function GovernmentPage() {
               </a>
             </div>
             <p className="subtle mt-4">
-              Poveznice vode na institucije. Podaci o sastavu još nisu uvezeni
-              ni verificirani.
+              Poveznice vode na institucije. Potpuni ministarski i koalicijski
+              sastav još čeka zasebnu provjeru.
             </p>
           </section>
         </div>

@@ -11,6 +11,7 @@ import { MetricCard } from "@/components/metric-card";
 import { MetricLineChart } from "@/components/metric-line-chart";
 import { TopicCard } from "@/components/topic-card";
 import { GovernmentProfile } from "@/components/government-profile";
+import { PartyOverview } from "@/components/party-overview";
 import { EmptyState } from "@/components/empty-state";
 import {
   featuredIndicators,
@@ -23,9 +24,9 @@ export default function HomePage() {
   return (
     <div className="space-y-9">
       <PageHeading
-        eyebrow="Neovisan pregled javnih podataka"
-        title="Hrvatska u brojkama"
-        description="Gospodarstvo, društvo i politika — s jasnim izvorima i prostorom za širu sliku."
+        eyebrow="Neovisan politički observatorij"
+        title="Politička slika Hrvatske"
+        description="Upoznajte Vladu, istražite političke stranke i stavite javne podatke u kontekst."
       >
         <Link
           href="/methodology"
@@ -36,15 +37,15 @@ export default function HomePage() {
           <ArrowUpRight size={13} aria-hidden="true" />
         </Link>
       </PageHeading>
+      <GovernmentProfile overview />
+      <PartyOverview />
       <div
         role="status"
         className="flex items-start gap-3 rounded-xl border border-primary/15 bg-accent/60 px-5 py-4 text-xs leading-5 text-accent-foreground"
       >
         <Info size={16} className="mt-0.5 shrink-0" aria-hidden="true" />
         <p>
-          <strong className="font-semibold">Razvojna verzija.</strong> Službeni
-          podaci još nisu povezani. Prazne vrijednosti ne znače nulu. Posljednja
-          provjera podataka: nije provedena.
+          <strong className="font-semibold">Nacionalni podaci još nisu povezani.</strong> Prazne vrijednosti ne znače nulu. Posljednja provjera statističkih podataka: nije provedena.
         </p>
       </div>
       <section aria-labelledby="national-indicators">
@@ -73,7 +74,7 @@ export default function HomePage() {
           ))}
         </div>
       </section>
-      <div className="grid gap-6 xl:grid-cols-[1.8fr_1fr]">
+      <div className="grid gap-6">
         <section className="surface min-w-0 p-6">
           <div className="mb-6 flex flex-wrap items-start justify-between gap-4">
             <div>
@@ -105,7 +106,6 @@ export default function HomePage() {
             </Link>
           </div>
         </section>
-        <GovernmentProfile compact />
       </div>
       <section aria-labelledby="explore-topics">
         <div className="mb-5 flex items-center justify-between">
@@ -123,21 +123,7 @@ export default function HomePage() {
           ))}
         </div>
       </section>
-      <div className="grid gap-6 lg:grid-cols-2">
-        <section className="surface">
-          <div className="flex items-center justify-between border-b p-6">
-            <h2 className="section-title">Politički krajolik</h2>
-            <Link href="/parties" className="text-link text-xs">
-              Imenik stranaka
-              <ArrowRight size={13} aria-hidden="true" />
-            </Link>
-          </div>
-          <EmptyState
-            title="Registar još nije povezan"
-            description="Registrirane stranke, parlamentarne stranke i potvrđene izborne liste bit će prikazane kao odvojeni statusi."
-            compact
-          />
-        </section>
+      <div className="grid gap-6">
         <section className="surface">
           <div className="flex items-center justify-between border-b p-6">
             <h2 className="section-title">Izborni pregled</h2>

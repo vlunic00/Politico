@@ -8,15 +8,51 @@ test("dashboard is honest about unavailable data and links to a definition", asy
   page.on("pageerror", (error) => errors.push(error.message));
   await page.goto("/");
   await expect(
-    page.getByRole("heading", { name: "Hrvatska u brojkama" }),
+    page.getByRole("heading", { name: "Politička slika Hrvatske" }),
   ).toBeVisible();
-  await expect(page.getByRole("status")).toContainText("Razvojna verzija");
+  await expect(page.getByRole("status")).toContainText("Nacionalni podaci još nisu povezani");
+  const government = page.getByRole("heading", {
+    name: "Aktualna Vlada",
+    exact: true,
+  });
+  const parties = page.getByRole("heading", {
+    name: "Ostale parlamentarne stranke",
+  });
+  const indicators = page.getByRole("heading", {
+    name: "Nacionalni pokazatelji",
+  });
+  const positions = await Promise.all(
+    [government, parties, indicators].map((heading) =>
+      heading.evaluate((node) => node.getBoundingClientRect().top),
+    ),
+  );
+  expect(positions[0]).toBeLessThan(positions[1]);
+  expect(positions[1]).toBeLessThan(positions[2]);
   await expect(
-    page.getByLabel("Vrijednost nije dostupna", { exact: true }),
-  ).toHaveCount(8);
+    page
+      .getByRole("list", { name: "Kartice parlamentarnih stranaka" })
+      .getByRole("article"),
+  ).toHaveCount(20);
+  await expect(
+    page.getByText("nije stanje uživo", { exact: false }).first(),
+  ).toBeVisible();
+  const portrait = page.getByRole("img", {
+    name: "Andrej Plenković",
+    exact: true,
+  });
+  await expect(portrait).toBeVisible();
+  await expect
+    .poll(() =>
+      portrait.evaluate((image) => (image as HTMLImageElement).naturalWidth),
+    )
+    .toBeGreaterThan(0);
+  await expect(page.getByLabel("Vrijednost nije dostupna", { exact: true })).toHaveCount(8);
   await page.screenshot({
     path: `test-results/home-${testInfo.project.name}.png`,
     fullPage: true,
+  });
+  await page.screenshot({
+    path: `test-results/hero-${testInfo.project.name}.png`,
   });
   await page
     .getByRole("link", { name: "Detalji: Realni rast BDP-a", exact: true })
@@ -25,10 +61,35 @@ test("dashboard is honest about unavailable data and links to a definition", asy
   await expect(
     page.getByRole("heading", { name: "Realni rast BDP-a", exact: true }),
   ).toBeVisible();
-  await expect(
-    page.getByRole("heading", { name: "Nema usporedivih podataka" }).first(),
-  ).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Nema usporedivih podataka" }).first()).toBeVisible();
   expect(errors).toEqual([]);
+});
+
+test("party cards open sourced profiles and can be found by abbreviation", async ({
+  page,
+}) => {
+  await page.goto("/");
+  await page
+    .getByRole("link", {
+      name: "Socijaldemokratska partija Hrvatske",
+      exact: true,
+    })
+    .click();
+  await expect(page).toHaveURL(/\/parties\/sdp$/);
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText(
+    "Socijaldemokratska partija Hrvatske",
+  );
+  await expect(
+    page.getByText("Siniša Hajdaš Dončić (Predsjednik)", { exact: true }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("link", { name: "Službeni izvor vodstva ↗" }),
+  ).toHaveAttribute("href", "https://www.sdp.hr/clan/sinisa-hajdas-doncic/");
+  await page.getByRole("searchbox").fill("SDP");
+  await page.getByRole("searchbox").press("Enter");
+  await expect(
+    page.getByRole("link", { name: /Stranka Socijaldemokratska partija/ }),
+  ).toBeVisible();
 });
 
 test("search accepts Croatian text without diacritics", async ({ page }) => {
@@ -72,6 +133,8 @@ test("Phase 1 pages render without horizontal overflow or accessibility violatio
     "/government/history",
     "/parties",
     "/parties/preview",
+    "/parties/sdp",
+    "/parties/mozemo",
     "/sources",
     "/methodology",
     "/elections",
