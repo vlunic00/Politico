@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Breadcrumb, PageHeading } from "@/components/page-heading";
 import { PartyProfile } from "@/components/party-profile";
-import { parliamentaryParties } from "@/lib/politics";
+import { getPartyDirectory } from "@/lib/parties/data";
 
 export async function generateMetadata({
   params,
@@ -10,19 +10,14 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
+  const directory = await getPartyDirectory();
   return {
     title:
-      parliamentaryParties.find((party) => party.slug === slug)?.name ??
+      directory.parties.find((party) => party.slug === slug)?.name ??
       "Predložak profila stranke",
   };
 }
-export const dynamicParams = false;
-export function generateStaticParams() {
-  return [
-    { slug: "preview" },
-    ...parliamentaryParties.map(({ slug }) => ({ slug })),
-  ];
-}
+export const dynamic = "force-dynamic";
 
 export default async function PartyPage({
   params,
@@ -30,14 +25,15 @@ export default async function PartyPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const party = parliamentaryParties.find((party) => party.slug === slug);
+  const directory = await getPartyDirectory();
+  const party = directory.parties.find((party) => party.slug === slug);
   if (slug !== "preview" && !party) notFound();
   return (
     <>
       <Breadcrumb label={party?.abbreviation ?? "Predložak profila"} />
       <PageHeading
         eyebrow={
-          party ? "Parlamentarna stranka · datirani izvori" : "Razvojni pregled"
+          party ? "Politička stranka · datirani izvori" : "Razvojni pregled"
         }
         title={party?.name ?? "Jednak prostor za svaku stranku"}
         description={
@@ -46,7 +42,7 @@ export default async function PartyPage({
             : "Pregled strukture profila. Ova stranica ne predstavlja postojeću političku stranku."
         }
       />
-      <PartyProfile party={party} />
+      <PartyProfile party={party} registryCheckedAt={directory.checkedAt} />
     </>
   );
 }

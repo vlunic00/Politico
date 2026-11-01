@@ -930,7 +930,7 @@ Avoid tracking users' individual political preferences. Do not store party-compa
 
 ## 21. Implementation milestones
 
-**Status — 1 November 2026:** Phases 1–3 are implemented. Phase 3 adds five sourced administrations from 2011, coalition periods, original programs, historical comparisons and exact-date chart markers. See [government history and comparison rules](./docs/government-history.md) for coverage and limitations. Phase 4 (the canonical party register and directory expansion) is next. The Phase 2 tourism import remains staged for source review.
+**Status — 1 November 2026:** Phases 1–4 are implemented. Phase 3 adds five sourced administrations, coalition periods and historical comparisons. Phase 4 imports the official party register, adds status-filtered profiles and search, connects dated parliamentary and selected election evidence, and provides versioned program uploads and a four-party comparison table. See [government history rules](./docs/government-history.md) and [party directory contracts](./docs/party-directory.md) for coverage and limitations. Phase 5 (grounded AI summaries and editorial review) is next. The Phase 2 tourism import remains staged for source review.
 
 ### Phase 1 — Foundation and UI
 

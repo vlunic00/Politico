@@ -1,5 +1,5 @@
 import { indicators, sources, topics } from "./catalogue";
-import { parliamentaryParties } from "./politics";
+import { parliamentaryParties, type ParliamentaryParty } from "./politics";
 
 export function normalizeSearch(value: string) {
   return value
@@ -10,15 +10,13 @@ export function normalizeSearch(value: string) {
     .trim();
 }
 
-export function searchCatalogue(query: string) {
+export function searchCatalogue(query: string, parties: (Pick<ParliamentaryParty, "name" | "abbreviation" | "slug" | "leaders"> & { registration?: { name: string } })[] = parliamentaryParties) {
   const normalized = normalizeSearch(query);
   if (!normalized) return [];
   return [
-    ...parliamentaryParties.map((party) => ({
+    ...parties.map((party) => ({
       title: `${party.name} (${party.abbreviation})`,
-      description:
-        party.leaders?.map((leader) => leader.name).join(", ") ??
-        "Parlamentarna stranka iz datiranog presjeka",
+      description: [party.registration?.name, party.leaders?.map((leader) => leader.name).join(", ")].filter(Boolean).join(" · ") || "Politička stranka · datirani izvori",
       href: `/parties/${party.slug}`,
       type: "Stranka",
     })),

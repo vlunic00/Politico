@@ -4,12 +4,15 @@ import { LeaderPortrait } from "./leader-portrait";
 import {
   formatSeatShare,
   parliamentarySnapshot,
-  type ParliamentaryParty,
 } from "@/lib/politics";
+import { partyElectionRecords, registerCatalogueUrl, registrationLabel, type DirectoryParty } from "@/lib/parties/catalogue";
+import { isGovernmentParty } from "@/lib/parties/directory";
+import { formatDate } from "@/lib/statistics/series";
+import { PartyPrograms } from "./party-programs";
 
-export function PartyProfile({ party }: { party?: ParliamentaryParty }) {
+export function PartyProfile({ party, registryCheckedAt }: { party?: DirectoryParty; registryCheckedAt?: string | null }) {
   const fields = [
-    ["Registracijski status", "Nije verificirano"],
+    ["Registracijski status", registrationLabel(party?.registration?.status)],
     [
       "Vodstvo",
       party?.leaders
@@ -18,16 +21,16 @@ export function PartyProfile({ party }: { party?: ParliamentaryParty }) {
     ],
     [
       "Parlamentarni status",
-      party ? "Zastupljena u datiranom presjeku" : "Nije verificirano",
+      typeof party?.seats === "number" ? "Zastupljena u datiranom presjeku" : "Nije u datiranom presjeku; današnji status nije potvrđen",
     ],
-    ["Sudjelovanje u Vladi", "Nije verificirano"],
+    ["Sudjelovanje u Vladi", party && isGovernmentParty(party.id) ? "Potvrđena koalicijska suradnja · datirani izvori" : "Nije zasebno verificirano"],
     [
       "Politička orijentacija",
       party?.orientation
         ? `${party.orientation.label} · samoodređenje`
         : "Nije verificirano",
     ],
-    ["Potvrđena kandidatura", "Nije verificirano"],
+    ["Kandidatura · sljedeći parlamentarni izbori", "Nije verificirano"],
   ];
   return (
     <div className="space-y-6">
@@ -35,16 +38,16 @@ export function PartyProfile({ party }: { party?: ParliamentaryParty }) {
         <div className="p-7 sm:p-10">
           <p className="eyebrow mb-3">
             {party
-              ? `${party.abbreviation} · parlamentarna evidencija`
+              ? `${party.abbreviation} · ${party.registration ? "službeni registar" : "parlamentarna evidencija"}`
               : "Razvojni predložak · nije zapis iz registra"}
           </p>
           <h2 className="text-2xl font-semibold tracking-tight">
             {party?.name ?? "Profil političke stranke"}
           </h2>
           <p className="subtle mt-3">
-            {party
+            {typeof party?.seats === "number"
               ? `U saborskom presjeku od ${parliamentarySnapshot.dateLabel} evidentirano je ${party.seats} mandata (${formatSeatShare(party.seats)} od ${parliamentarySnapshot.total}). To nije stanje uživo niti potvrda registracije ili kandidature.`
-              : "Naziv, kratica i službeni sažetak prikazat će se nakon uvoza i provjere registra."}
+              : party?.registration ? "Identitet i registracijski status prema službenom registru. Registracija ne potvrđuje parlamentarni mandat, sudjelovanje u Vladi ili izbornu kandidaturu." : "Naziv, kratica i službeni sažetak prikazat će se nakon uvoza i provjere registra."}
           </p>
           <dl className="mt-7 grid gap-4 sm:grid-cols-2">
             {fields.map(([label, value]) => (
@@ -54,6 +57,7 @@ export function PartyProfile({ party }: { party?: ParliamentaryParty }) {
               </div>
             ))}
           </dl>
+          {party?.website ? <a href={party.website} className="text-link mt-6 text-xs" target="_blank" rel="noreferrer">Službena stranica ↗</a> : <p className="subtle mt-6">Službena mrežna stranica nije zasebno verificirana.</p>}
         </div>
         <div className="relative flex min-h-72 items-center justify-center overflow-hidden bg-linear-to-br from-accent via-background to-white">
           {party?.leaders ? (
@@ -86,18 +90,30 @@ export function PartyProfile({ party }: { party?: ParliamentaryParty }) {
           )}
         </div>
       </section>
-      {party && (
+      {party?.registration && <section className="surface p-6">
+        <h3 className="section-title">Podaci službenog registra</h3>
+        <dl className="mt-4 grid gap-4 text-sm sm:grid-cols-2">{[
+          ["Naziv u registru", party.registration.name], ["Kratica u registru", party.registration.abbreviation ?? "Nije navedena"],
+          ["Registarski broj / knjiga", `${party.registration.registerNumber} / ${party.registration.book}`],
+          ["Datum upisa", formatDate(party.registration.registeredAt)], ["Datum promjene statusa", formatDate(party.registration.statusDate)],
+          ["Sjedište", party.registration.seat ?? "Nije navedeno"],
+        ].map(([label, value]) => <div key={label}><dt className="text-xs text-muted-foreground">{label}</dt><dd className="mt-1">{value}</dd></div>)}</dl>
+        <p className="subtle mt-4">Provjera registra: {formatDate(registryCheckedAt)}. Status i datumi prikazani su zasebno; nepoznat datum nije datum preuzimanja.</p>
+        <a href={registerCatalogueUrl} className="text-link mt-3 text-xs" target="_blank" rel="noreferrer">Izvor registra · Otvorena dozvola RH ↗</a>
+      </section>}
+      {party && (typeof party.seats === "number" || party.leaders || party.orientation) && (
         <section className="surface p-6">
           <h3 className="section-title">Izvori profila</h3>
           <div className="mt-4 flex flex-wrap gap-5 text-xs">
-            <a
+            {typeof party.seats === "number" && <a
               href={parliamentarySnapshot.sourceUrl}
               target="_blank"
               rel="noreferrer"
               className="text-link text-xs"
             >
               Hrvatski sabor · mandati ↗
-            </a>
+            </a>}
+            {isGovernmentParty(party.id) && <a href="/government/history#plenkovic-3" className="text-link">Izvori koalicijske suradnje ↗</a>}
             {party.leadershipSource && (
               <a
                 href={party.leadershipSource}
@@ -123,25 +139,20 @@ export function PartyProfile({ party }: { party?: ParliamentaryParty }) {
             </a>
           </div>
           <p className="subtle mt-4 text-xs">
-            Provjera izvora: 24. listopada 2026. Nedokumentirani statusi i
-            stavovi ostaju nedostupni.
+            Parlamentarni presjek i dostupni podaci o vodstvu i orijentaciji:
+            provjera 24. listopada 2026. Registar i koalicija imaju zasebne datirane izvore.
           </p>
         </section>
       )}
+      <PartyPrograms party={party} />
+      <section className="surface p-6">
+        <h3 className="section-title">Izborna evidencija</h3>
+        <p className="subtle mt-3">Sljedeći parlamentarni izbori: sudjelovanje nije verificirano. Povijesna lista nije potvrda buduće kandidature.</p>
+        {party && partyElectionRecords.filter((record) => record.partyId === party.id).map((record) => <p key={record.context} className="subtle mt-3">{record.description}{" "}<a href={record.sourceUrl} className="text-link text-xs" target="_blank" rel="noreferrer">DIP · službena objava ↗</a></p>)}
+        <p className="subtle mt-3">Evidencija je djelomična. Glasovi i mandati koalicijske liste ne pripisuju se pojedinačnoj stranci; potpuna izborna povijest još nije povezana.</p>
+      </section>
       <div className="grid gap-6 lg:grid-cols-2">
         {[
-          [
-            "Službeni program",
-            "Verificirani program nije dostupan. Poveznica na izvornik bit će istaknuta prije sažetka.",
-          ],
-          [
-            "Političke pozicije",
-            "Nema verificiranog dokumenta za analizu. Stavovi se ne zaključuju iz naziva ili općih pretpostavki.",
-          ],
-          [
-            "Izborna povijest",
-            "Rezultati, koalicije i zastupnička mjesta još nisu povezani sa službenim evidencijama.",
-          ],
           [
             "Parlamentarni rad i financije",
             "Podaci će biti dostupni uz službene dokumente i referentno razdoblje.",

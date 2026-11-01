@@ -4,6 +4,7 @@ import { ArrowUpRight } from "lucide-react";
 import { PageHeading } from "@/components/page-heading";
 import { EmptyState } from "@/components/empty-state";
 import { searchCatalogue } from "@/lib/search";
+import { getPartyDirectory } from "@/lib/parties/data";
 
 export const metadata: Metadata = { title: "Pretraživanje" };
 
@@ -14,13 +15,14 @@ export default async function SearchPage({
 }) {
   const { q } = await searchParams;
   const query = (typeof q === "string" ? q : "").slice(0, 200).trim();
-  const results = searchCatalogue(query);
+  const directory = await getPartyDirectory();
+  const results = searchCatalogue(query, directory.parties);
   return (
     <>
       <PageHeading
         eyebrow="Pretraživanje kataloga"
         title={query ? `Rezultati za „${query}”` : "Što želite istražiti?"}
-        description="Pretražite planirane pokazatelje, teme i institucionalne izvore. Pretraga podržava hrvatske dijakritičke znakove."
+        description="Pretražite političke stranke, pokazatelje, teme i institucionalne izvore. Pretraga podržava hrvatske dijakritičke znakove."
       />
       {results.length ? (
         <div className="surface divide-y">

@@ -73,8 +73,76 @@ model SourceRevision {
   publicationDate   DateTime?              @db.Date
   sourceUpdatedAt   DateTime?              @db.Timestamptz(3)
   observations      IndicatorObservation[]
+  registrations     PartyRegistration[]
 
   @@unique([sourceDatasetId, contentHash])
+}
+
+model Party {
+  id            String              @id
+  slug          String              @unique
+  registrations PartyRegistration[]
+  programs      PartyProgram[]
+}
+
+model PartyRegistration {
+  id             String         @id @default(cuid())
+  partyId        String
+  party          Party          @relation(fields: [partyId], references: [id], onDelete: Restrict)
+  revisionId     String
+  revision       SourceRevision @relation(fields: [revisionId], references: [id], onDelete: Restrict)
+  name           String
+  abbreviation   String?
+  status         String
+  registerNumber String
+  book           Int
+  registeredAt   DateTime        @db.Date
+  statusDate     DateTime?       @db.Date
+  seat           String?
+  publishedAt    DateTime        @db.Timestamptz(3)
+
+  @@unique([partyId, revisionId])
+  @@index([revisionId])
+}
+
+model PartyProgram {
+  id       String                   @id @default(cuid())
+  partyId  String
+  party    Party                    @relation(fields: [partyId], references: [id], onDelete: Restrict)
+  context  String
+  versions ProgramDocumentVersion[]
+
+  @@unique([partyId, context])
+}
+
+model ProgramDocumentVersion {
+  id                 String       @id @default(cuid())
+  programId          String
+  program            PartyProgram @relation(fields: [programId], references: [id], onDelete: Restrict)
+  version            Int
+  title              String
+  documentUrl        String
+  language           String
+  publicationDate    DateTime?     @db.Date
+  retrievedAt        DateTime      @db.Timestamptz(3)
+  contentHash        String
+  revisionHash       String
+  storedDocumentPath String
+  evidence           Json
+  publishedAt        DateTime?     @db.Timestamptz(3)
+  reviewedBy         String?
+  reviews            ProgramReview[]
+
+  @@unique([programId, version])
+  @@unique([programId, revisionHash])
+}
+
+model ProgramReview {
+  id        String                 @id @default(cuid())
+  versionId String
+  version   ProgramDocumentVersion @relation(fields: [versionId], references: [id], onDelete: Restrict)
+  reviewer  String
+  createdAt DateTime               @default(now()) @db.Timestamptz(3)
 }
 
 model GeographicArea {

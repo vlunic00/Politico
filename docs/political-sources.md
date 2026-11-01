@@ -16,7 +16,7 @@ Phase 3 adds sourced HDZ–DP coalition records and government history in `src/l
 
 Overview preserves the source table's order and places HDZ in the government hero. The remaining 20 parties are available in a keyboard-scrollable card row. The full party page uses alphabetical order. Other parties in the row are not automatically labelled opposition. The separately named party “stranka Nezavisni” is distinct from the 11 independent MPs.
 
-This list is not the official registry of all registered Croatian parties. Non-parliamentary parties and registration status still require the canonical register integration.
+This parliamentary list is distinct from the official registry. Phase 4 imports the complete ministry export through data.gov.hr, including nonparliamentary and ceased records. An explicit `SBT_ID` crosswalk connects the 21 parliamentary entries without guessing from names or abbreviations. See [registry provenance and limitations](./party-directory.md).
 
 ## Leadership and orientation
 

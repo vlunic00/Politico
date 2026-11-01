@@ -1,23 +1,19 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { PageHeading } from "@/components/page-heading";
-import { EmptyState } from "@/components/empty-state";
 import { GovernmentComparison } from "@/components/government-comparison";
+import { PartyComparison } from "@/components/party-comparison";
 
 const comparisons = {
   parties: {
     title: "Usporedba političkih programa",
     description:
       "Jednaka struktura za svaku stranku, izvorne izjave i dokumentirani prijedlozi. Bez ocjena ili pobjednika.",
-    empty: "Verificirani programi još nisu dostupni",
-    note: "Usporedba do četiri stranke postaje dostupna nakon povezivanja službenog registra i programa u četvrtoj fazi.",
   },
   governments: {
     title: "Usporedba administracija",
     description:
       "Promjene kroz usporediva razdoblja, s europskim kontekstom i dokumentiranim granicama mandata.",
-    empty: "Podaci za usporedbu još nisu povezani",
-    note: "Promjena tijekom mandata ne dokazuje učinak politike.",
   },
 };
 export const dynamicParams = false;
@@ -54,9 +50,7 @@ export default async function ComparisonPage({
         title={comparison.title}
         description={comparison.description}
       />
-      {kind === "governments" ? <GovernmentComparison query={await searchParams} /> : <section className="surface">
-        <EmptyState title={comparison.empty} description={comparison.note} />
-      </section>}
+      {kind === "governments" ? <GovernmentComparison query={await searchParams} /> : <PartyComparison query={await searchParams} />}
     </>
   );
 }

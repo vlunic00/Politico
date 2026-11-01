@@ -1,0 +1,1 @@
+ALTER TABLE "PartyRegistration" ALTER COLUMN "seat" DROP NOT NULL;

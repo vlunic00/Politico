@@ -7,6 +7,8 @@ import { getStatistics } from "@/lib/statistics/data";
 import { datasetUrl, seriesDefinitions } from "@/lib/statistics/definitions";
 import { formatDate } from "@/lib/statistics/series";
 import { governments, governmentVerificationDate } from "@/lib/governments";
+import { getPartyDirectory } from "@/lib/parties/data";
+import { registerCatalogueUrl, registerUrl } from "@/lib/parties/catalogue";
 import {
   parliamentarySnapshot,
   politicalVerificationDate,
@@ -18,6 +20,7 @@ export const metadata: Metadata = { title: "Katalog izvora" };
 export const dynamic = "force-dynamic";
 export default async function SourcesPage() {
   const { series, runs } = await getStatistics();
+  const partyDirectory = await getPartyDirectory();
   return (
     <>
       <PageHeading
@@ -93,6 +96,14 @@ export default async function SourcesPage() {
           ne ažuriraju se automatski. Izvori za pojedina vodstva i samoodređenja
           dostupni su na profilima stranaka.
         </p>
+      </section>
+      <section id="party-register" className="surface mt-6 space-y-3 p-6">
+        <h2 className="section-title">Službeni registar političkih stranaka</h2>
+        <p className="subtle">Ministarstvo pravosuđa, uprave i digitalne transformacije · Otvorena dozvola RH. {partyDirectory.status === "ready" ? `${partyDirectory.parties.length} objavljenih zapisa, uključujući aktivne i prestale stranke.` : "Registar trenutačno nije povezan ili nije dostupan."}</p>
+        <p className="subtle">Preuzeto: {formatDate(partyDirectory.retrievedAt)} · uspješna provjera: {formatDate(partyDirectory.checkedAt)}. Status registracije ne potvrđuje kandidaturu, mandat ili političku orijentaciju.</p>
+        <div className="flex flex-wrap gap-5"><a href={registerCatalogueUrl} className="text-link text-xs" target="_blank" rel="noreferrer">Katalog i licenca ↗</a><a href={registerUrl} className="text-link text-xs" target="_blank" rel="noreferrer">Izvorni JSON registra ↗</a></div>
+        {partyDirectory.revision && <p className="break-all text-[10px] text-muted-foreground">SHA-256: {partyDirectory.revision}</p>}
+        <p className="subtle">Programi se objavljuju po verificiranoj verziji. Profil stranke prikazuje izvorni dokument, datum objave ako je poznat, preuzimanje i sačuvanu PDF verziju. Neobjavljene verzije nisu javne.</p>
       </section>
       <section id="governments" className="surface mt-6 p-6">
         <h2 className="section-title">Mandati, koalicije i programi vlada</h2>

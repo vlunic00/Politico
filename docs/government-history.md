@@ -42,4 +42,4 @@ The comparison includes separately sourced context: [EU accession and euro/Schen
 
 Unit tests exercise monthly/quarterly/annual boundaries, population stocks, missing observations, zero denominators, incompatible EU observations, independent source breaks, malformed/repeated query inputs and record consistency. Desktop/mobile browser tests exercise history links, form submissions, URL persistence, custom dates, actual GDP periods, chart markers, unavailable older wage history and accessibility.
 
-Phase 4 is next: canonical party-register import, status filters, persistent political/program records, program versioning and party comparison. Automated political ingestion, authenticated editorial workflows, scheduling and production deployment are still later work.
+Phase 4 now adds the canonical party-register import, status filters, persistent registration/program records, program versioning and party comparison; see [party directory contracts](./party-directory.md). Phase 5 is next. Automated refresh of other political facts, authenticated editorial workflows, scheduling and production deployment remain later work.

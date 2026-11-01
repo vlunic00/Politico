@@ -3,11 +3,11 @@ import { ArrowUpRight } from "lucide-react";
 import {
   formatSeatShare,
   parliamentarySnapshot,
-  type ParliamentaryParty,
 } from "@/lib/politics";
+import { registrationLabel, type DirectoryParty } from "@/lib/parties/catalogue";
 import { LeaderPortrait } from "./leader-portrait";
 
-export function PartyCard({ party }: { party: ParliamentaryParty }) {
+export function PartyCard({ party }: { party: Omit<DirectoryParty, "id" | "programs"> }) {
   return (
     <article className="surface flex h-full flex-col overflow-hidden">
       <div
@@ -31,6 +31,7 @@ export function PartyCard({ party }: { party: ParliamentaryParty }) {
         </span>
       </div>
       <div className="flex flex-1 flex-col p-5 pt-2">
+        {party.registration && <p className="mb-3 text-[10px] text-muted-foreground">{registrationLabel(party.registration.status)}</p>}
         <h3 className="min-h-15 text-sm leading-5 font-semibold tracking-tight">
           <Link href={`/parties/${party.slug}`} className="hover:text-primary">
             {party.name}
@@ -71,11 +72,11 @@ export function PartyCard({ party }: { party: ParliamentaryParty }) {
               Udio u saborskom presjeku
             </p>
             <p className="mt-1 text-2xl font-semibold tracking-tight">
-              {formatSeatShare(party.seats)}
+              {typeof party.seats === "number" ? formatSeatShare(party.seats) : "Nije u presjeku"}
             </p>
           </div>
           <span className="pb-1 text-xs text-muted-foreground">
-            {party.seats} / {parliamentarySnapshot.total}
+            {typeof party.seats === "number" ? `${party.seats} / ${parliamentarySnapshot.total}` : ""}
           </span>
         </div>
         <Link

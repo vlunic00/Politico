@@ -1,6 +1,6 @@
 # Statistical database contracts
 
-The statistical foundation is PostgreSQL and Prisma. Political/editorial entities belong to later phases.
+The statistical foundation is PostgreSQL and Prisma. Phase 4 adds sourced party registrations and immutable program versions; see [party data contracts](./party-directory.md). Dated government, parliamentary and leadership editorial records retain their separate sources.
 
 ```text
 Topic → IndicatorDefinition → IndicatorObservation ← GeographicArea
