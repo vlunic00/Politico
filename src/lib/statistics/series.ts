@@ -20,7 +20,8 @@ export type Series = {
   latest: PublishedPoint;
   change: { value: number; unit: string; baseline: string } | null;
   eu: PublishedPoint | null;
-  points: { period: string; croatia: number | null; eu: number | null; flags: string }[];
+  observations: PublishedPoint[];
+  points: { period: string; periodStart: string; croatia: number | null; eu: number | null; flags: string }[];
   source: {
     name: string; url: string; publicationDate: string | null; retrievedAt: string;
     updatedAt: string | null; checkedAt: string | null; methodologyUrl: string;
@@ -66,10 +67,10 @@ export function buildSeries(def: SeriesDefinition, observations: PublishedPoint[
     const period = cursor.toISOString().slice(0, 10);
     const croatia = byPeriod.get(period);
     const eu = compatibleEu(euByPeriod.get(period), croatia);
-    points.push({ period: formatPeriod(period, def.frequency, def.slug), croatia: croatia?.value ?? null, eu: eu?.value ?? null,
+    points.push({ period: formatPeriod(period, def.frequency, def.slug), periodStart: period, croatia: croatia?.value ?? null, eu: eu?.value ?? null,
       flags: [croatia?.sourceFlags && `HR: ${croatia.sourceFlags}`, eu?.sourceFlags && `EU: ${eu.sourceFlags}`].filter(Boolean).join("; ") });
     cursor.setUTCMonth(cursor.getUTCMonth() + months);
   }
   return { slug: def.slug, unit: def.unit, frequency: def.frequency, definition: def.definition,
-    limitations: def.limitations, latest, change, eu: compatibleEu(euByPeriod.get(latest.periodStart), latest), points, source };
+    limitations: def.limitations, latest, change, eu: compatibleEu(euByPeriod.get(latest.periodStart), latest), observations, points, source };
 }

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { PageHeading } from "@/components/page-heading";
 import { EmptyState } from "@/components/empty-state";
+import { GovernmentComparison } from "@/components/government-comparison";
 
 const comparisons = {
   parties: {
@@ -16,7 +17,7 @@ const comparisons = {
     description:
       "Promjene kroz usporediva razdoblja, s europskim kontekstom i dokumentiranim granicama mandata.",
     empty: "Podaci za usporedbu još nisu povezani",
-    note: "Povezivanje mandata i vremenskih serija planirano je u trećoj fazi. Promjena tijekom mandata ne dokazuje učinak politike.",
+    note: "Promjena tijekom mandata ne dokazuje učinak politike.",
   },
 };
 export const dynamicParams = false;
@@ -39,10 +40,13 @@ export async function generateMetadata({
 
 export default async function ComparisonPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ kind: string }>;
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
-  const comparison = getComparison((await params).kind);
+  const { kind } = await params;
+  const comparison = getComparison(kind);
   return (
     <>
       <PageHeading
@@ -50,9 +54,9 @@ export default async function ComparisonPage({
         title={comparison.title}
         description={comparison.description}
       />
-      <section className="surface">
+      {kind === "governments" ? <GovernmentComparison query={await searchParams} /> : <section className="surface">
         <EmptyState title={comparison.empty} description={comparison.note} />
-      </section>
+      </section>}
     </>
   );
 }

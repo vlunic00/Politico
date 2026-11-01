@@ -7,6 +7,8 @@ import {
   parliamentarySnapshot,
 } from "@/lib/politics";
 import { LeaderPortrait } from "./leader-portrait";
+import { governmentVerificationDate, latestGovernment } from "@/lib/governments";
+import { formatDate } from "@/lib/statistics/series";
 
 export function GovernmentProfile({
   overview = false,
@@ -71,7 +73,8 @@ export function GovernmentProfile({
                 Koalicijski sastav
               </dt>
               <dd className="mt-1.5 text-sm text-muted-foreground">
-                Čeka zasebnu provjeru
+                {latestGovernment.coalition.at(-1)?.parties}
+                <Link href={`/government/history#${latestGovernment.id}`} className="mt-1 block underline underline-offset-4">Koalicijski izvori i obuhvat ↗</Link>
               </dd>
             </div>
           </dl>
@@ -106,7 +109,7 @@ export function GovernmentProfile({
       </div>
       <div className="flex flex-wrap items-center justify-between gap-2 border-t border-primary/10 px-6 py-3 text-[10px] leading-5 text-muted-foreground sm:px-8 lg:px-10">
         <p>
-          Provjera izvora: 24. listopada 2026. · Saborski presjek:{" "}
+          Provjera mandata i koalicije: {formatDate(governmentVerificationDate)} · Saborski presjek:{" "}
           {parliamentarySnapshot.dateLabel}
         </p>
         <div className="flex flex-wrap gap-4">

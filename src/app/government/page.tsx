@@ -57,8 +57,8 @@ export default function GovernmentPage() {
               </a>
             </div>
             <p className="subtle mt-4">
-              Poveznice vode na institucije. Potpuni ministarski i koalicijski
-              sastav još čeka zasebnu provjeru.
+              Poveznice vode na institucije. Datirani mandati i koalicijske promjene
+              s izvorima dostupni su na vremenskoj crti administracija.
             </p>
           </section>
         </div>

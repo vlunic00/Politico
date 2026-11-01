@@ -5,16 +5,18 @@ import {
   Legend,
   Line,
   LineChart,
+  ReferenceLine,
   ResponsiveContainer,
   Tooltip,
   XAxis,
   YAxis,
 } from "recharts";
 import { EmptyState } from "./empty-state";
-import { formatNumber } from "@/lib/statistics/series";
+import { formatDate, formatNumber } from "@/lib/statistics/series";
 
 export type ChartPoint = {
   period: string;
+  periodStart?: string;
   croatia: number | null;
   eu: number | null;
   flags?: string;
@@ -25,11 +27,13 @@ export function MetricLineChart({
   unit,
   title,
   development = false,
+  transitions = [],
 }: {
   points?: ChartPoint[];
   unit: string;
   title: string;
   development?: boolean;
+  transitions?: { date: string; label: string }[];
 }) {
   if (!points.length)
     return (
@@ -40,6 +44,9 @@ export function MetricLineChart({
         />
       </div>
     );
+  const dated = transitions.length > 0 && points.every((point) => point.periodStart);
+  const data = points.map((point) => ({ ...point, timestamp: point.periodStart ? Date.parse(point.periodStart) : undefined }));
+  const visibleTransitions = dated ? transitions.filter((transition) => transition.date >= points[0].periodStart! && transition.date <= points[points.length - 1].periodStart!) : [];
   return (
     <figure aria-label={title}>
       {development && (
@@ -55,13 +62,18 @@ export function MetricLineChart({
           initialDimension={{ width: 600, height: 288 }}
         >
           <LineChart
-            data={points}
+            data={data}
             aria-label={title}
             margin={{ top: 8, right: 10, bottom: 0, left: 0 }}
           >
             <CartesianGrid stroke="#e6e9ec" vertical={false} />
             <XAxis
-              dataKey="period"
+              dataKey={dated ? "timestamp" : "period"}
+              type={dated ? "number" : "category"}
+              scale={dated ? "time" : "auto"}
+              domain={dated ? ["dataMin", "dataMax"] : undefined}
+              tickFormatter={dated ? (value) => String(new Date(value).getUTCFullYear()) : undefined}
+              ticks={dated ? data.filter((point) => point.periodStart?.endsWith("-01-01")).map((point) => point.timestamp!) : undefined}
               tickLine={false}
               axisLine={false}
               tick={{ fontSize: 11, fill: "#626b77" }}
@@ -74,6 +86,7 @@ export function MetricLineChart({
               width={60}
             />
             <Tooltip
+              labelFormatter={dated ? (value) => data.find((point) => point.timestamp === Number(value))?.period ?? "" : undefined}
               formatter={(value, name) => [
                 `${new Intl.NumberFormat("hr-HR", { maximumFractionDigits: 2 }).format(Number(value))} ${unit}`,
                 name,
@@ -85,6 +98,7 @@ export function MetricLineChart({
               }}
             />
             <Legend wrapperStyle={{ fontSize: 11, paddingTop: 20 }} />
+            {visibleTransitions.map((transition) => <ReferenceLine key={transition.date} x={Date.parse(transition.date)} stroke="#8c949c" strokeDasharray="4 4" />)}
             <Line
               name="Hrvatska"
               dataKey="croatia"
@@ -109,6 +123,10 @@ export function MetricLineChart({
       </div>
       <figcaption className="mt-4 text-xs text-muted-foreground">
         {title} · Jedinica: {unit}
+        {visibleTransitions.length > 0 && <div className="mt-3 space-y-1">
+          <p>Isprekidane crte označavaju točne datume početka administracija, bez pripisivanja uzroka promjena.</p>
+          <ul aria-label="Prijelazi administracija">{visibleTransitions.map((transition) => <li key={transition.date}>{formatDate(transition.date)} · {transition.label}</li>)}</ul>
+        </div>}
       </figcaption>
       <details className="mt-3 text-xs text-muted-foreground">
         <summary className="min-h-6 w-fit py-1 underline underline-offset-4">

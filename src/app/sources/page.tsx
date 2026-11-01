@@ -6,6 +6,7 @@ import { indicators } from "@/lib/catalogue";
 import { getStatistics } from "@/lib/statistics/data";
 import { datasetUrl, seriesDefinitions } from "@/lib/statistics/definitions";
 import { formatDate } from "@/lib/statistics/series";
+import { governments, governmentVerificationDate } from "@/lib/governments";
 import {
   parliamentarySnapshot,
   politicalVerificationDate,
@@ -92,6 +93,14 @@ export default async function SourcesPage() {
           ne ažuriraju se automatski. Izvori za pojedina vodstva i samoodređenja
           dostupni su na profilima stranaka.
         </p>
+      </section>
+      <section id="governments" className="surface mt-6 p-6">
+        <h2 className="section-title">Mandati, koalicije i programi vlada</h2>
+        <p className="subtle mt-3">Provjereno {formatDate(governmentVerificationDate)}. Mandati su zasebni i uključuju tehničko obnašanje dužnosti do primopredaje. Koalicijske evidencije razlikuju stranke, saveze i parlamentarnu podršku. Pojedini događaji i njihovi izvori dostupni su na vremenskoj crti.</p>
+        <ul className="mt-4 divide-y">{governments.map((government) => <li key={government.id} className="flex flex-wrap items-center justify-between gap-4 py-4 text-xs">
+          <a href={`/government/history#${government.id}`} className="text-link">{government.name}</a>
+          <div className="flex flex-wrap gap-4"><a href={government.sourceUrl} className="text-link" target="_blank" rel="noreferrer">Službeni mandat ↗</a><a href={government.programUrl} className="text-link" target="_blank" rel="noreferrer">Izvorni program ↗</a></div>
+        </li>)}</ul>
       </section>
       <section id="portraits" className="surface mt-6 p-6">
         <h2 className="section-title">Fotografije i licence</h2>

@@ -1,3 +1,5 @@
+import { latestGovernment } from "./governments";
+
 // shortcut: manually verified snapshots, replace with reviewed adapters when political data ingestion is implemented.
 export const politicalVerificationDate = "2026-10-24";
 export const parliamentarySnapshot = {
@@ -65,13 +67,12 @@ export const portraits = {
 } as const;
 
 export const currentGovernment = {
-  primeMinister: "Andrej Plenković",
+  primeMinister: latestGovernment.primeMinister,
   party: "Hrvatska demokratska zajednica",
-  termStart: "2024-05-17",
+  termStart: latestGovernment.start,
   termStartLabel: "17. svibnja 2024.",
   sourceUrl: "https://www.vlada.gov.hr/predsjednik-vlade-65/65",
-  termSourceUrl:
-    "https://sabor.hr/hr/sjednice-sabora/predstavljanje-vlade-republike-hrvatske-i-glasovanje-o-povjerenju-vladi-republike-8",
+  termSourceUrl: latestGovernment.sourceUrl,
 };
 
 export type ParliamentaryParty = {

@@ -64,6 +64,9 @@ export default function MethodologyPage() {
           navedite poveznicu na stranicu te službeni izvor.
         </p>
         <div className="mt-5 flex flex-wrap gap-6">
+          <Link href="/compare/governments#comparison-methodology" className="text-link">
+            Pravila usporedbe administracija ↗
+          </Link>
           <Link href="/sources" className="text-link">
             Katalog izvora ↗
           </Link>

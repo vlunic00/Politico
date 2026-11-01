@@ -930,6 +930,8 @@ Avoid tracking users' individual political preferences. Do not store party-compa
 
 ## 21. Implementation milestones
 
+**Status — 1 November 2026:** Phases 1–3 are implemented. Phase 3 adds five sourced administrations from 2011, coalition periods, original programs, historical comparisons and exact-date chart markers. See [government history and comparison rules](./docs/government-history.md) for coverage and limitations. Phase 4 (the canonical party register and directory expansion) is next. The Phase 2 tourism import remains staged for source review.
+
 ### Phase 1 — Foundation and UI
 
 - Initialize the Next.js application.

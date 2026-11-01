@@ -6,9 +6,12 @@ export function proxy(request: NextRequest) {
   let slug: string;
   try { slug = decodeURIComponent(request.nextUrl.pathname.split("/")[2]); }
   catch { return NextResponse.rewrite(new URL("/404", request.url), { status: 404 }); }
-  if (!topics.some((topic) => topic.slug === slug))
+  const valid = request.nextUrl.pathname.startsWith("/compare/")
+    ? slug === "governments" || slug === "parties"
+    : topics.some((topic) => topic.slug === slug);
+  if (!valid)
     return NextResponse.rewrite(new URL("/404", request.url), { status: 404 });
   return NextResponse.next();
 }
 
-export const config = { matcher: "/topics/:slug" };
+export const config = { matcher: ["/topics/:slug", "/compare/:slug"] };

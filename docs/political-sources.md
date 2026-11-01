@@ -1,6 +1,6 @@
 # Political overview sources
 
-Manually checked on **24 October 2026**. The overview uses factual snapshots, not live or synthetic political data. Update `src/lib/politics.ts` and verify the original records before changing the date. Future automated political ingestion should replace this manual snapshot.
+Leadership, orientation, parliamentary and portrait records were manually checked on **24 October 2026**. Government terms and coalition records were separately verified on **1 November 2026**; see [government history sources](./government-history.md). The overview uses factual snapshots, not live or synthetic political data. Update the relevant data module and verify the original records before changing its verification date. Future automated political ingestion should replace these manual snapshots.
 
 ## Government
 
@@ -8,7 +8,7 @@ Manually checked on **24 October 2026**. The overview uses factual snapshots, no
 - [Official biography](https://vlada.gov.hr/the-prime-minister/14973): party leadership and membership.
 - [Sabor confidence vote on 17 May 2024](https://sabor.hr/hr/sjednice-sabora/predstavljanje-vlade-republike-hrvatske-i-glasovanje-o-povjerenju-vladi-republike-8): start of this administration, separate from the earlier terms.
 
-The complete current coalition and cabinet have not been verified for this snapshot. They remain unavailable rather than inferred from seat counts or the prime minister's party.
+Phase 3 adds sourced HDZ–DP coalition records and government history in `src/lib/governments.ts`, separate from parliamentary seat counts and confidence support. Current cabinet membership links to the official government directory; selected dated changes are recorded on the timeline. These are reviewed editorial records, not an automated feed or a complete record of every confidence-supporting MP.
 
 ## Parliamentary membership
 
