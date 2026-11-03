@@ -21,8 +21,11 @@ export async function saveImmutable(path: string, bytes: string | Uint8Array) {
 }
 
 export async function importPartyRegister(db: PrismaClient, options: { load?: () => Promise<string>; snapshotDirectory?: string } = {}) {
-  await db.dataSource.upsert({ where: { id: "mpudt-register" }, create: { id: "mpudt-register", name: "MPUDT · Registar političkih stranaka", url: registerCatalogueUrl }, update: {} });
-  await db.sourceDataset.upsert({ where: { id: registerDatasetId }, create: { id: registerDatasetId, sourceId: "mpudt-register", externalId: "1a766609-e55d-4c13-ad0c-7bd409496d34", url: registerUrl, methodologyUrl: registerCatalogueUrl, license: "Otvorena dozvola RH" }, update: {} });
+  await db.$transaction(async (tx) => {
+    await tx.$executeRaw`SELECT pg_advisory_xact_lock(hashtext(${registerDatasetId}))`;
+    await tx.dataSource.upsert({ where: { id: "mpudt-register" }, create: { id: "mpudt-register", name: "MPUDT · Registar političkih stranaka", url: registerCatalogueUrl }, update: {} });
+    await tx.sourceDataset.upsert({ where: { id: registerDatasetId }, create: { id: registerDatasetId, sourceId: "mpudt-register", externalId: "1a766609-e55d-4c13-ad0c-7bd409496d34", url: registerUrl, methodologyUrl: registerCatalogueUrl, license: "Otvorena dozvola RH" }, update: {} });
+  });
   const run = await db.ingestionRun.create({ data: { sourceDatasetId: registerDatasetId } });
   try {
     const text = await (options.load ?? (() => fetchRegisterText()))();

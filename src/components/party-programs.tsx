@@ -1,12 +1,13 @@
 import { EmptyState } from "./empty-state";
 import { electionContexts, policyTopics, type DirectoryParty } from "@/lib/parties/catalogue";
 import { formatDate } from "@/lib/statistics/series";
+import { ProgramSummary } from "./program-summary";
 
 export function PartyPrograms({ party }: { party?: DirectoryParty }) {
   return <section className="surface p-6">
     <h3 className="section-title">Službeni programi i verzije</h3>
     <p className="subtle mt-3">Izvorni dokument je temelj za provjeru. Povijesni program ne predstavlja nužno današnje stavove ili program sljedećih izbora.</p>
-    {!party?.programs.length ? <EmptyState title="Nema verificiranog programa" description="Ne zaključujemo političke pozicije bez izvornog dokumenta. AI sažeci još nisu povezani." compact />
+    {!party?.programs.length ? <EmptyState title="Nema verificiranog programa" description="Ne zaključujemo političke pozicije bez izvornog dokumenta." compact />
       : <div className="mt-5 space-y-6">{party.programs.map((program) => <article key={program.id} id={`program-${program.id}`} className="rounded-xl border p-4">
         <h4 className="text-sm font-semibold">{program.title} · verzija {program.version}</h4>
         <p className="subtle mt-2">{electionContexts[program.context as keyof typeof electionContexts] ?? program.context} · jezik: {program.language}</p>
@@ -18,6 +19,7 @@ export function PartyPrograms({ party }: { party?: DirectoryParty }) {
           <p className="text-xs font-medium">{policyTopics[evidence.topic]}</p><blockquote className="mt-1 border-l-2 pl-3 text-sm leading-6">„{evidence.quote}”</blockquote>
           <a href={`${program.documentUrl.split("#")[0]}#page=${evidence.page}`} className="text-link mt-2 text-xs" target="_blank" rel="noreferrer">Izvornik · PDF stranica {evidence.page} ↗</a>
         </div>)}</div>}
+        {program.summaries?.length ? <><ProgramSummary summary={program.summaries[0]} documentUrl={program.documentUrl} />{program.summaries.length > 1 && <details className="mt-5"><summary className="cursor-pointer text-sm font-semibold">Prethodna odobrena izdanja sažetka</summary>{program.summaries.slice(1).map((summary) => <ProgramSummary key={summary.id} summary={summary} documentUrl={program.documentUrl} />)}</details>}</> : <p className="subtle mt-5">Nema odobrenog AI sažetka za ovu verziju programa.</p>}
       </article>)}</div>}
   </section>;
 }

@@ -23,7 +23,7 @@ const rules = [
   ],
   [
     "Izvornik prije AI sažetka",
-    "Službeni program ima prednost pred sažetkom. Budući AI sažeci moraju biti označeni, vezani uz verziju izvornika i odobreni ljudskom provjerom. Nenavedeni stavovi ostaju nenavedeni.",
+    "Službeni program ima prednost pred sažetkom. AI sažeci su na hrvatskom, označeni, vezani uz verziju izvornika i objavljeni samo nakon ljudske provjere. Citati ostaju na jeziku izvornika. Nepotpuna ekstrakcija ne dokazuje da tema nije navedena.",
   ],
   [
     "Revizije i kontinuitet",
@@ -55,7 +55,7 @@ export default function MethodologyPage() {
         <p className="subtle mt-3">
           Ovo je razvojna verzija. Politički pregled koristi ručno provjerene,
           datirane službene izvore. Statističke serije dolaze iz Eurostata i DZS-a uz validaciju, snimke izvora i oznake statusa. AI sažeci
-          još nisu povezani. Parlamentarna evidencija nije cjelovit registar
+          objavljuju se tek nakon provjere citata, hrvatskog jezika i obuhvata tema. Parlamentarna evidencija nije cjelovit registar
           stranaka niti potvrda izborne kandidature. Javni kanal za prijavu
           ispravaka bit će objavljen prije javnog izdanja.
         </p>

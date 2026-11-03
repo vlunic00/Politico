@@ -173,7 +173,6 @@ test("unknown records return a real 404", async ({ page }) => {
     "/topics/unknown",
     "/parties/unknown",
     "/compare/unknown",
-    "/admin",
   ]) {
     const response = await page.goto(path);
     expect(response?.status()).toBe(404);
@@ -181,4 +180,10 @@ test("unknown records return a real 404", async ({ page }) => {
       page.getByRole("heading", { name: "Stranica nije pronađena" }),
     ).toBeVisible();
   }
+});
+
+test("editorial pages require authentication", async ({ request }) => {
+  const response = await request.get("/admin/summaries");
+  expect(response.status()).toBe(401);
+  expect(response.headers()["www-authenticate"]).toContain("Basic");
 });

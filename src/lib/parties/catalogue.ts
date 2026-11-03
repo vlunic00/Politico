@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { parliamentaryParties, parliamentarySnapshot, type ParliamentaryParty } from "../politics";
+import type { PublicSummary } from "./summary-contract";
 
 export const registerDatasetId = "mpudt:political-parties";
 export const registerUrl = "https://data.gov.hr/ckan/dataset/197ea086-e03b-42d1-b3c1-0496c85faf1e/resource/1a766609-e55d-4c13-ad0c-7bd409496d34/download/data.json";
@@ -32,6 +33,7 @@ export type PublicProgram = {
   id: string; context: string; version: number; title: string; documentUrl: string; language: string;
   publicationDate: string | null; retrievedAt: string; contentHash: string; publishedAt: string;
   evidence: ProgramEvidence[];
+  summaries?: PublicSummary[];
 };
 export type DirectoryParty = Omit<ParliamentaryParty, "seats"> & {
   id: string; seats?: number; website?: string;

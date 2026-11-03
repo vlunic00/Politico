@@ -1,11 +1,13 @@
 import Link from "next/link";
 import { getPartyDirectory } from "@/lib/parties/data";
-import { electionContexts, policyTopics, registrationLabel } from "@/lib/parties/catalogue";
+import { electionContexts, registrationLabel } from "@/lib/parties/catalogue";
 import { partyComparisonSelection } from "@/lib/parties/comparison";
 import { isGovernmentParty } from "@/lib/parties/directory";
 import { formatDate } from "@/lib/statistics/series";
 import { parliamentarySnapshot } from "@/lib/politics";
 import { EmptyState } from "./empty-state";
+import { SummarySection } from "./program-summary";
+import { summaryTopics } from "@/lib/parties/summary-contract";
 
 export async function PartyComparison({ query }: { query: Record<string, string | string[] | undefined> }) {
   const directory = await getPartyDirectory();
@@ -40,15 +42,20 @@ export async function PartyComparison({ query }: { query: Record<string, string 
                 const program = programs[index];
                 return <td key={party.id} className="p-3 align-top">{program ? <><a href={program.documentUrl} className="text-link text-xs" target="_blank" rel="noreferrer">{program.title} ↗</a><p className="subtle mt-2">Verzija {program.version} · objava: {formatDate(program.publicationDate)}</p><Link href={`/parties/${party.slug}#program-${program.id}`} className="text-link mt-2 text-xs">Arhiva i izvorni dokument ↗</Link></> : "Nema verificiranog programa za odabrani kontekst"}</td>;
               })}</tr>
-              {Object.entries(policyTopics).map(([topic, label]) => <tr key={topic} className="border-t"><th scope="row" className="p-3 align-top font-medium">{label}</th>{selected.map((party, index) => {
+              <tr className="border-t"><th scope="row" className="p-3 font-medium">AI sažetak · ljudski pregledan</th>{selected.map((party, index) => {
+                const summary = programs[index]?.summaries?.[0];
+                return <td key={party.id} className="p-3 align-top">{summary ? <Link href={`/parties/${party.slug}#summary-${summary.id}`} className="text-link text-xs">Hrvatski · izdanje {summary.sequence} · generirano {formatDate(summary.generatedAt)} · odobreno {formatDate(summary.publishedAt)} ↗</Link> : "Nema odobrenog AI sažetka"}</td>;
+              })}</tr>
+              {Object.entries(summaryTopics).map(([topic, label]) => <tr key={topic} className="border-t"><th scope="row" className="p-3 align-top font-medium">{label}</th>{selected.map((party, index) => {
                 const program = programs[index];
                 const evidence = program?.evidence.find((evidence) => evidence.topic === topic);
-                return <td key={party.id} className="p-3 align-top">{evidence && program ? <><blockquote className="leading-6">„{evidence.quote}”</blockquote><a href={`${program.documentUrl.split("#")[0]}#page=${evidence.page}`} className="text-link mt-3 text-xs" target="_blank" rel="noreferrer">Izvorni program · PDF str. {evidence.page} ↗</a></> : <p className="subtle">Nema verificiranog navoda.</p>}</td>;
+                const section = program?.summaries?.[0]?.content.sections.find((section) => section.topic === topic);
+                return <td key={party.id} className="p-3 align-top">{section && program ? <SummarySection section={section} documentUrl={program.documentUrl} /> : evidence && program ? <><blockquote className="leading-6">„{evidence.quote}”</blockquote><a href={`${program.documentUrl.split("#")[0]}#page=${evidence.page}`} className="text-link mt-3 text-xs" target="_blank" rel="noreferrer">Izvorni program · PDF str. {evidence.page} ↗</a></> : <p className="subtle">Nema verificiranog navoda.</p>}</td>;
               })}</tr>)}
             </tbody>
           </table>
         </div>
-        <p className="subtle mt-4">Izostanak verificiranog navoda ne znači da tema nije obrađena u izvorniku. Registracijski izvor i datum provjere dostupni su na profilu svake stranke. Saborski presjek nije izborni rezultat. AI sažeci još nisu povezani.</p>
+        <p className="subtle mt-4">Izostanak verificiranog navoda ne znači da tema nije obrađena u izvorniku. Prikazuju se samo ljudski odobreni AI sažeci, na hrvatskom, uz citate u izvornom jeziku. Konkretan prijedlog navodi radnju ili instrument; opći cilj samo željeni ishod. Registracijski izvor i datum provjere dostupni su na profilu svake stranke. Saborski presjek nije izborni rezultat.</p>
       </section>}
   </div>;
 }

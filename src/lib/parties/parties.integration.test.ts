@@ -1,4 +1,4 @@
-import { afterAll, beforeAll, describe, expect, it } from "vitest";
+import { afterAll, beforeAll, describe, expect, it, vi } from "vitest";
 import { randomUUID } from "node:crypto";
 import { mkdtemp, readFile, readdir, rm, writeFile } from "node:fs/promises";
 import { join, resolve, sep } from "node:path";
@@ -7,6 +7,10 @@ import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient } from "../../generated/prisma/client";
 import { importPartyRegister } from "./ingestion";
 import { uploadPartyProgram, publishPartyProgram } from "./programs";
+import { extractProgram } from "./extraction";
+import { generateProgramSummary, reviseProgramSummary } from "./summaries";
+import { reviewProgramSummary } from "./summary-review";
+import { fixturePdf, fixtureSummary } from "./summary-fixture";
 
 describe.skipIf(!process.env.DATABASE_URL)("party imports and program versions, isolated PostgreSQL schema", () => {
   const schema = `parties_test_${randomUUID().replaceAll("-", "")}`;
@@ -21,6 +25,7 @@ describe.skipIf(!process.env.DATABASE_URL)("party imports and program versions, 
     directory = await mkdtemp(resolve(".data", "parties-test-"));
   }, 20000);
   afterAll(async () => {
+    vi.unstubAllEnvs();
     await db.$disconnect(); await pool.end();
     await admin.query(`DROP SCHEMA IF EXISTS "${schema}" CASCADE`); await admin.end();
     if (directory) {
@@ -70,4 +75,47 @@ describe.skipIf(!process.env.DATABASE_URL)("party imports and program versions, 
     await expect(publishPartyProgram(db, changed.id, "Test reviewer")).rejects.toThrow();
     expect(await db.programDocumentVersion.count({ where: { publishedAt: { not: null } } })).toBe(2);
   });
+
+  it("extracts real PDF pages, caches generation, gates publication by role and human checks, audits edits, and retains approved history", async () => {
+    vi.stubEnv("LLM_API_KEY", "isolated-test-key"); vi.stubEnv("LLM_MODEL", "isolated-test-model"); vi.stubEnv("LLM_BASE_URL", "https://provider.example/v1/");
+    const metadata = { partyId: "1000", context: "summary-test", title: "Synthetic test document", documentUrl: "https://example.org/fixture.pdf", language: "hr", publicationDate: null };
+    const version = await uploadPartyProgram(db, fixturePdf(), metadata, directory);
+    await expect(extractProgram(db, version.id)).rejects.toThrow(/Verify/);
+    await publishPartyProgram(db, version.id, "Fixture source reviewer");
+    const request = vi.fn(async () => Response.json({ model: "isolated-test-model", choices: [{ finish_reason: "stop", message: { content: JSON.stringify(fixtureSummary()) } }] }));
+    const generated = await generateProgramSummary(db, version.id, request);
+    expect(generated.status).toBe("DRAFT");
+    expect((await generateProgramSummary(db, version.id, request)).id).toBe(generated.id);
+    expect(request).toHaveBeenCalledTimes(1);
+    const editor = { id: "editor", role: "editor" as const }, reviewer = { id: "reviewer", role: "reviewer" as const };
+    const review = { revision: 1, action: "save", content: fixtureSummary(), note: "Checked synthetic evidence", sourceChecked: true, croatianChecked: true, coverageChecked: true };
+    await expect(reviewProgramSummary(db, generated.id, { ...review, action: "approve" }, editor)).rejects.toThrow(/recenzent/);
+    await expect(reviewProgramSummary(db, generated.id, { ...review, action: "approve", croatianChecked: false }, reviewer)).rejects.toThrow(/Potvrdite/);
+    expect(await db.programSummary.count({ where: { status: "APPROVED" } })).toBe(0);
+    const edits = await Promise.allSettled([reviewProgramSummary(db, generated.id, review, editor), reviewProgramSummary(db, generated.id, review, editor)]);
+    expect(edits.filter((result) => result.status === "fulfilled")).toHaveLength(1);
+    expect(await db.summaryReview.count()).toBe(1);
+    const approved = await reviewProgramSummary(db, generated.id, { ...review, revision: 2, action: "approve" }, reviewer);
+    expect(approved.publishedAt).not.toBeNull();
+    expect(approved.generatedJson).toEqual(fixtureSummary());
+    await expect(reviewProgramSummary(db, generated.id, { ...review, revision: 3 }, editor)).rejects.toThrow(/zaključen/);
+    const second = await reviseProgramSummary(db, generated.id);
+    expect(second.sequence).toBe(2);
+    await reviewProgramSummary(db, second.id, { ...review, action: "approve" }, reviewer);
+    const third = await reviseProgramSummary(db, second.id);
+    await reviewProgramSummary(db, third.id, { ...review, action: "reject", content: null }, reviewer);
+    expect(await db.programSummary.count({ where: { status: "APPROVED" } })).toBe(2);
+    const fourth = await reviseProgramSummary(db, second.id);
+    const laterDocument = await uploadPartyProgram(db, fixturePdf(), { ...metadata, title: "New source metadata" }, directory);
+    await publishPartyProgram(db, laterDocument.id, "Fixture source reviewer");
+    await expect(reviewProgramSummary(db, fourth.id, { ...review, action: "approve" }, reviewer)).rejects.toThrow(/novija/);
+    expect((await db.programSummary.findUniqueOrThrow({ where: { id: generated.id } })).status).toBe("APPROVED");
+    const logs = await db.summaryReview.findMany({ where: { summaryId: generated.id }, orderBy: { createdAt: "asc" } });
+    expect(logs.map((log) => log.actorId)).toEqual(["editor", "reviewer"]);
+    expect(logs[0].beforeJson).toHaveProperty("revision", 1);
+    expect(logs[1].afterJson).toHaveProperty("status", "APPROVED");
+    await writeFile(version.storedDocumentPath, "damaged archive");
+    await expect(extractProgram(db, version.id)).rejects.toThrow();
+    expect(await db.programSummary.count({ where: { status: "APPROVED" } })).toBe(2);
+  }, 30000);
 });

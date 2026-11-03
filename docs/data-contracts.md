@@ -2,6 +2,8 @@
 
 The statistical foundation is PostgreSQL and Prisma. Phase 4 adds sourced party registrations and immutable program versions; see [party data contracts](./party-directory.md). Dated government, parliamentary and leadership editorial records retain their separate sources.
 
+Phase 5 adds `ProgramExtraction` (page text/hash per source version), `ProgramSummary` (generation provenance, original JSON, editable draft, review status and approved editions), and append-only `SummaryReview` snapshots. All summaries require Croatian (`hr-HR`) and exact source quotations; only approved records are public. See [summary contracts and editorial authorization](./program-summaries.md). The migration is additive and preserves existing sources, programs and observations.
+
 ```text
 Topic → IndicatorDefinition → IndicatorObservation ← GeographicArea
 DataSource → SourceDataset → SourceRevision → IndicatorObservation

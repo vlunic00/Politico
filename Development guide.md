@@ -465,7 +465,7 @@ For each section, produce:
 - Never fill an omitted topic using general knowledge about the party.
 - Never use external political commentary as if it were part of the program.
 - Preserve amounts, dates, conditions, and qualifications.
-- Preserve the document language and provide Croatian summaries by default.
+- All public program summaries and generated explanatory text must be in Croatian (`hr-HR`), including summaries of documents in another language. Preserve original quotations in the document's language; do not replace evidence with a translation. Human review must verify Croatian language quality as well as source fidelity.
 - Distinguish the party's statements from verified external facts.
 - Show "Nije navedeno u analiziranom programu" for absent positions.
 - Label the output as an AI-generated summary.
@@ -930,7 +930,7 @@ Avoid tracking users' individual political preferences. Do not store party-compa
 
 ## 21. Implementation milestones
 
-**Status — 1 November 2026:** Phases 1–4 are implemented. Phase 3 adds five sourced administrations, coalition periods and historical comparisons. Phase 4 imports the official party register, adds status-filtered profiles and search, connects dated parliamentary and selected election evidence, and provides versioned program uploads and a four-party comparison table. See [government history rules](./docs/government-history.md) and [party directory contracts](./docs/party-directory.md) for coverage and limitations. Phase 5 (grounded AI summaries and editorial review) is next. The Phase 2 tourism import remains staged for source review.
+**Status — 3 November 2026:** Phases 1–5 are implemented. Phase 3 adds sourced administrations and historical comparisons. Phase 4 adds the official party register, versioned programs and party comparison. Phase 5 adds PDF retrieval/extraction, grounded Croatian summary drafts, citation validation, authenticated role-based human review, audit history and approved-summary display. See [government history rules](./docs/government-history.md), [party directory contracts](./docs/party-directory.md) and [summary workflow and setup](./docs/program-summaries.md). Real summary generation requires configured model credentials; publication requires individual reviewer accounts and actual human review. Neither is fabricated by tests. Phase 6 (elections and regions) is next. The Phase 2 tourism import remains staged for source review.
 
 ### Phase 1 — Foundation and UI
 
@@ -987,6 +987,7 @@ Use clearly labeled development fixtures where live data are not yet connected. 
 
 ### Phase 5 — AI integration
 
+- Generate and publish summaries in Croatian (`hr-HR`); retain quotations in their original language.
 - Implement document retrieval and extraction.
 - Create grounded summarization prompts.
 - Return structured summary JSON with evidence references.

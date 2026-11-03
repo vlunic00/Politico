@@ -132,6 +132,8 @@ model ProgramDocumentVersion {
   publishedAt        DateTime?     @db.Timestamptz(3)
   reviewedBy         String?
   reviews            ProgramReview[]
+  extractions        ProgramExtraction[]
+  summaries          ProgramSummary[]
 
   @@unique([programId, version])
   @@unique([programId, revisionHash])
@@ -143,6 +145,63 @@ model ProgramReview {
   version   ProgramDocumentVersion @relation(fields: [versionId], references: [id], onDelete: Restrict)
   reviewer  String
   createdAt DateTime               @default(now()) @db.Timestamptz(3)
+}
+
+model ProgramExtraction {
+  id             String                 @id @default(cuid())
+  versionId      String
+  version        ProgramDocumentVersion @relation(fields: [versionId], references: [id], onDelete: Restrict)
+  extractor      String
+  contentHash    String
+  pages          Json
+  complete       Boolean
+  createdAt      DateTime               @default(now()) @db.Timestamptz(3)
+  summaries      ProgramSummary[]
+
+  @@unique([versionId, extractor, contentHash])
+}
+
+model ProgramSummary {
+  id              String                 @id @default(cuid())
+  versionId       String
+  version         ProgramDocumentVersion @relation(fields: [versionId], references: [id], onDelete: Restrict)
+  extractionId    String
+  extraction      ProgramExtraction      @relation(fields: [extractionId], references: [id], onDelete: Restrict)
+  sequence        Int
+  generationKey   String?                @unique
+  provider        String
+  requestedModel  String
+  modelIdentifier String
+  promptVersion   String
+  generatedAt     DateTime               @default(now()) @db.Timestamptz(3)
+  generatedJson   Json
+  summaryJson     Json
+  revision        Int                    @default(1)
+  status          SummaryStatus          @default(DRAFT)
+  publishedAt     DateTime?              @db.Timestamptz(3)
+  reviews         SummaryReview[]
+
+  @@unique([versionId, sequence])
+  @@index([versionId, status])
+}
+
+enum SummaryStatus {
+  DRAFT
+  APPROVED
+  REJECTED
+}
+
+model SummaryReview {
+  id          String         @id @default(cuid())
+  summaryId   String
+  summary     ProgramSummary @relation(fields: [summaryId], references: [id], onDelete: Restrict)
+  actorId     String
+  role        String
+  action      String
+  note        String
+  beforeJson  Json
+  afterJson   Json
+  createdAt   DateTime       @default(now()) @db.Timestamptz(3)
 }
 
 model GeographicArea {
