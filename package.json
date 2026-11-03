@@ -22,10 +22,12 @@
     "data:import": "tsx scripts/import-data.ts",
     "data:coverage": "tsx scripts/data-coverage.ts",
     "parties:import": "tsx scripts/import-parties.ts",
+    "elections:import": "tsx scripts/import-elections.ts",
     "parties:program": "tsx scripts/party-program.ts",
     "parties:summary": "tsx scripts/party-summary.ts",
     "editorial:user": "tsx scripts/editorial-user.ts",
     "test:parties": "node --env-file=.env node_modules/vitest/vitest.mjs run src/lib/parties/parties.integration.test.ts",
+    "test:elections": "node --env-file=.env node_modules/vitest/vitest.mjs run src/lib/elections/elections.integration.test.ts",
     "postinstall": "prisma generate"
   },
   "engines": {

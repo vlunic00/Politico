@@ -1,3 +1,5 @@
+import { regionalGeographies } from "../regions/catalogue";
+
 export type Frequency = "ANNUAL" | "QUARTERLY" | "MONTHLY";
 export type SeriesDefinition = {
   slug: string;
@@ -11,6 +13,7 @@ export type SeriesDefinition = {
   limitations: string;
   minimumHistory: number;
   change: "percent" | "points";
+  geographies?: string[];
 };
 
 function eurostat(
@@ -27,6 +30,10 @@ function eurostat(
 }
 
 export const seriesDefinitions: SeriesDefinition[] = [
+  { ...eurostat("regional-gdp", "nama_10r_3gdp", "ANNUAL", "EUR / stanovniku", { unit: "EUR_HAB" }, "reg_eco10", "BDP po stanovniku u tekućim tržišnim cijenama, EUR po stanovniku; županije kao NUTS 3 i zasebna nacionalna referenca.", "percent"), geographies: regionalGeographies,
+    limitations: "Nominalni BDP, nije realni rast ni dohodak kućanstva. Eurostat zaokružuje iznose u EUR po stanovniku. Granice NUTS 2024; ne spajamo stare i nove kodove. Nacionalna referenca nije prosjek županijskih vrijednosti." },
+  { ...eurostat("regional-migration-adjusted", "demo_r_gind3", "ANNUAL", "osoba", { indic_de: "CNMIGRAT" }, "demo_r_gind3", "Neto migracija sa statističkom prilagodbom: razlika ukupne i prirodne promjene stanovništva, godišnje, NUTS 3.", "percent"), geographies: regionalGeographies,
+    limitations: "Uključuje statističke prilagodbe; nije izravan broj doseljenih minus odseljenih. Može uključivati učinke revizije procjena stanovništva. Nije stopa po stanovniku; veće županije mogu imati veće apsolutne iznose." },
   eurostat("real-gdp-growth", "namq_10_gdp", "QUARTERLY", "%", { unit: "CLV_PCH_SM", s_adj: "SCA", na_item: "B1GQ" }, "namq_10_gdp", "Realni BDP: promjena prema istom tromjesečju prethodne godine; lančano povezani obujam, sezonski i kalendarski prilagođeno."),
   eurostat("gdp-per-capita-pps", "nama_10_pc", "ANNUAL", "PPS", { unit: "CP_PPS_EU27_2020_HAB", na_item: "B1GQ" }, "nama10", "BDP po stanovniku u standardima kupovne moći, tekuće cijene; PPS EU-27 od 2020.", "percent"),
   eurostat("unemployment", "une_rt_m", "MONTHLY", "%", { s_adj: "SA", age: "TOTAL", unit: "PC_ACT", sex: "T" }, "une_esms", "Udio nezaposlenih u radnoj snazi, oba spola, dob 15–74; sezonski prilagođena usklađena stopa."),
@@ -73,7 +80,6 @@ export function datasetUrl(def: SeriesDefinition) {
   const url = new URL(`https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/${def.dataset}`);
   for (const [key, value] of Object.entries({ lang: "EN", freq: { ANNUAL: "A", QUARTERLY: "Q", MONTHLY: "M" }[def.frequency], ...def.dimensions, sinceTimePeriod: "2015" }))
     url.searchParams.set(key, value);
-  url.searchParams.append("geo", "HR");
-  url.searchParams.append("geo", "EU27_2020");
+  for (const geo of def.geographies ?? ["HR", "EU27_2020"]) url.searchParams.append("geo", geo);
   return url.href;
 }

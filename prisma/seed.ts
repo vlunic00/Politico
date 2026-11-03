@@ -2,6 +2,7 @@ import "dotenv/config";
 import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient } from "../src/generated/prisma/client";
 import { indicators, sources, topics } from "../src/lib/catalogue";
+import { counties } from "../src/lib/regions/catalogue";
 
 if (!process.env.DATABASE_URL) throw new Error("DATABASE_URL is required.");
 const db = new PrismaClient({
@@ -56,6 +57,7 @@ async function main() {
       });
     }
     for (const area of [
+      ...counties.map((county) => ({ id: county.id, nameHr: county.name, nameEn: county.name, level: "NUTS3_2024" })),
       { id: "HR", nameHr: "Hrvatska", nameEn: "Croatia", level: "country" },
       {
         id: "EU27_2020",

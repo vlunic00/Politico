@@ -9,6 +9,8 @@ import { formatDate } from "@/lib/statistics/series";
 import { governments, governmentVerificationDate } from "@/lib/governments";
 import { getPartyDirectory } from "@/lib/parties/data";
 import { registerCatalogueUrl, registerUrl } from "@/lib/parties/catalogue";
+import { getElections } from "@/lib/elections/data";
+import { getRegionalStatistics } from "@/lib/regions/data";
 import {
   parliamentarySnapshot,
   politicalVerificationDate,
@@ -21,6 +23,8 @@ export const dynamic = "force-dynamic";
 export default async function SourcesPage() {
   const { series, runs } = await getStatistics();
   const partyDirectory = await getPartyDirectory();
+  const electionData = await getElections();
+  const regional = await getRegionalStatistics();
   return (
     <>
       <PageHeading
@@ -40,7 +44,7 @@ export default async function SourcesPage() {
                 {source.shortName}
               </span>
               <span className="text-[11px] text-muted-foreground">
-                {Object.values(series).some((s) => s.source.name === source.name) ? "Povezano" : "Nije povezano"}
+                {Object.values(series).some((s) => s.source.name === source.name) || (source.id === "dip" && electionData.records.length > 0) ? "Povezano" : "Nije povezano"}
               </span>
             </div>
             <h2 className="section-title">{source.name}</h2>
@@ -71,11 +75,12 @@ export default async function SourcesPage() {
             return <li key={def.slug} className="flex flex-wrap justify-between gap-3 py-4 text-xs">
               <div><a href={datasetUrl(def)} className="text-link" target="_blank" rel="noreferrer">{indicators.find((i) => i.slug === def.slug)?.name} ↗</a>
                 <p className="mt-1 break-words text-muted-foreground">{def.source === "dzs" ? "DZS" : "Eurostat"} · {def.dataset}</p></div>
-              <p className="text-muted-foreground">{run?.status === "NEEDS_REVIEW" ? "Novi uvoz čeka pregled" : run?.status === "FAILED" ? "Posljednji uvoz nije uspio" : series[def.slug] ? "Objavljeno" : "Nije uvezeno"} · {formatDate(run?.finishedAt)}</p>
+              <p className="text-muted-foreground">{run?.status === "NEEDS_REVIEW" ? "Novi uvoz čeka pregled" : run?.status === "FAILED" ? "Posljednji uvoz nije uspio" : series[def.slug] || regional.series[def.slug] ? "Objavljeno" : "Nije uvezeno"} · {formatDate(run?.finishedAt)}</p>
             </li>;
           })}
         </ul>
       </section>
+      <section className="surface mt-6 p-6"><h2 className="section-title">Izborni rezultati · DIP</h2><p className="subtle mt-3">Cjeloviti izvorni odgovori i odluke o izabranim kandidatima ostaju u arhivi. Promjena konačnih rezultata čeka izričitu provjeru prije nove objave.</p><ul className="mt-4 divide-y">{electionData.records.map((election) => <li key={election.id} className="py-4 text-xs"><a className="text-link" href={`/elections/${election.id}`}>{election.title} ↗</a><p className="subtle mt-2">{election.status === "FINAL" ? "Konačno" : "Privremeno"} · izvorna objava {formatDate(election.metadata.publicationDate)} · preuzeto {formatDate(election.retrievedAt)}.</p><details className="subtle mt-2"><summary>Izvor i revizija</summary><a className="text-link mt-2" href={election.metadata.referenceUrl}>Službena odluka ↗</a><p className="mt-2 break-all">SHA-256: {election.revision}</p></details></li>)}</ul>{!electionData.records.length && <p className="subtle mt-3">Nema dostupnog objavljenog izbornog uvoza.</p>}</section>
       <section className="surface mt-6 p-6">
         <h2 className="section-title">Politički presjek</h2>
         <p className="subtle mt-3">

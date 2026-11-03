@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { PageHeading } from "@/components/page-heading";
-import { EmptyState } from "@/components/empty-state";
+import { RegionalExplorer } from "@/components/regional-explorer";
 
 export const metadata: Metadata = { title: "Regionalni pregled" };
 
-export default function RegionsPage() {
+export const dynamic = "force-dynamic";
+export default async function RegionsPage({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }) {
   return (
     <>
       <PageHeading
@@ -13,12 +14,7 @@ export default function RegionsPage() {
         title="Hrvatska izbliza"
         description="Regionalni pokazatelji s jasnim geografskim obuhvatom i usporedivim razdobljima."
       />
-      <section className="surface">
-        <EmptyState
-          title="Regionalni podaci još nisu dostupni"
-          description="Profili i karta županija planirani su u šestoj fazi. Nedostajuće županijske podatke ne zamjenjujemo nacionalnim prosjekom."
-        />
-      </section>
+      <RegionalExplorer query={await searchParams} />
       <Link href="/topics/regions" className="text-link mt-6">
         Planirani regionalni pokazatelji ↗
       </Link>

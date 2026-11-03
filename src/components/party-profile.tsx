@@ -9,6 +9,7 @@ import { partyElectionRecords, registerCatalogueUrl, registrationLabel, type Dir
 import { isGovernmentParty } from "@/lib/parties/directory";
 import { formatDate } from "@/lib/statistics/series";
 import { PartyPrograms } from "./party-programs";
+import Link from "next/link";
 
 export function PartyProfile({ party, registryCheckedAt }: { party?: DirectoryParty; registryCheckedAt?: string | null }) {
   const fields = [
@@ -148,7 +149,7 @@ export function PartyProfile({ party, registryCheckedAt }: { party?: DirectoryPa
       <section className="surface p-6">
         <h3 className="section-title">Izborna evidencija</h3>
         <p className="subtle mt-3">Sljedeći parlamentarni izbori: sudjelovanje nije verificirano. Povijesna lista nije potvrda buduće kandidature.</p>
-        {party && partyElectionRecords.filter((record) => record.partyId === party.id).map((record) => <p key={record.context} className="subtle mt-3">{record.description}{" "}<a href={record.sourceUrl} className="text-link text-xs" target="_blank" rel="noreferrer">DIP · službena objava ↗</a></p>)}
+        {party && <details className="mt-4"><summary className="cursor-pointer text-sm text-primary underline underline-offset-4">Verificirane povijesne kandidacijske liste i predlagatelji</summary>{(party.electionRecords ?? partyElectionRecords.filter((record) => record.partyId === party.id)).map((record, index) => <p key={index} className="subtle mt-3">{record.description}{" "}<a href={record.sourceUrl} className="text-link text-xs" target="_blank" rel="noreferrer">DIP · izvor ↗</a>{"electionId" in record && typeof record.electionId === "string" && <Link href={`/elections/${record.electionId}`} className="text-link ml-3 text-xs">Pregled izbora ↗</Link>}</p>)}</details>}
         <p className="subtle mt-3">Evidencija je djelomična. Glasovi i mandati koalicijske liste ne pripisuju se pojedinačnoj stranci; potpuna izborna povijest još nije povezana.</p>
       </section>
       <div className="grid gap-6 lg:grid-cols-2">

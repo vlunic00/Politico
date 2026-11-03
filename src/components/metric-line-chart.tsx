@@ -28,12 +28,14 @@ export function MetricLineChart({
   title,
   development = false,
   transitions = [],
+  labels = ["Hrvatska", "EU-27"],
 }: {
   points?: ChartPoint[];
   unit: string;
   title: string;
   development?: boolean;
   transitions?: { date: string; label: string }[];
+  labels?: [string, string];
 }) {
   if (!points.length)
     return (
@@ -100,7 +102,7 @@ export function MetricLineChart({
             <Legend wrapperStyle={{ fontSize: 11, paddingTop: 20 }} />
             {visibleTransitions.map((transition) => <ReferenceLine key={transition.date} x={Date.parse(transition.date)} stroke="#8c949c" strokeDasharray="4 4" />)}
             <Line
-              name="Hrvatska"
+              name={labels[0]}
               dataKey="croatia"
               stroke="#263e49"
               strokeWidth={2.5}
@@ -110,7 +112,7 @@ export function MetricLineChart({
               isAnimationActive={false}
             />
             <Line
-              name="EU-27"
+              name={labels[1]}
               dataKey="eu"
               stroke="#7d97aa"
               strokeWidth={2}
@@ -141,10 +143,10 @@ export function MetricLineChart({
                   Razdoblje
                 </th>
                 <th scope="col" className="p-2">
-                  Hrvatska ({unit})
+                  {labels[0]} ({unit})
                 </th>
                 <th scope="col" className="p-2">
-                  EU-27 ({unit})
+                  {labels[1]} ({unit})
                 </th>
                 <th scope="col" className="p-2">Oznake izvora</th>
               </tr>

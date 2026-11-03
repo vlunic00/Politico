@@ -1,6 +1,6 @@
 # Croatia Political Observatory
 
-Phases 1–5 of [the development guide](./Development%20guide.md): a Croatian, responsive Next.js frontend with a PostgreSQL statistical platform, sourced government history, the official political-party register, and grounded Croatian AI program summaries with human editorial approval. The dashboard uses validated Eurostat and DZS observations, historical charts, compatible EU comparisons, reference periods and source metadata. Political facts retain their separately dated sources.
+Phases 1–6 of [the development guide](./Development%20guide.md): a Croatian Next.js frontend with a PostgreSQL statistical platform, government history, the official party register, reviewed Croatian AI summaries, official election history and county exploration. The dashboard uses validated Eurostat and DZS observations, historical charts, compatible comparisons and source metadata. Political facts retain their separately dated sources; each phase documents its current coverage.
 
 ## Local development
 
@@ -33,7 +33,9 @@ The Compose database binds only to localhost. The credentials in `.env.example` 
 - Page-preserving PDF extraction, bounded structured LLM drafts in Croatian (`hr-HR`), exact quotation/page and numerical checks, stored generation metadata, approved summary history and a protected editorial interface. Editors can amend drafts; reviewers can approve or reject them with an audit trail. Model credentials and individual reviewer accounts must be configured before real summaries can be generated and published; the existing program excerpts remain available meanwhile.
 - Equal-width comparison of up to four parties, with original programs, version references, verified quotations and explicit missing information. The next parliamentary election is the default context; historical, presidential, European and local contexts remain separate.
 - Eight sourced national indicator cards below the political overview, sparklines, annual changes and same-period EU values.
-- All 16 topic categories and 45 indicator definitions, with deep links, units, frequency and availability. Initial live import published 31 series; tourism remains staged for review.
+- All 16 topic categories and 46 indicator definitions, with deep links, units, frequency and availability. There are 31 national and two regional active indicators; tourism remains staged for review.
+- Five DIP election datasets covering 103 result areas: parliamentary 2020/2024, European 2024 and both presidential rounds 2024/25. Lists, candidates, preferences, explicit party/proposer identity links, turnout and vote shares retain their source scopes. Official allocations reconcile to 151 seats per parliamentary election and 12 European seats; coalition seats are not split into party estimates.
+- Clickable, attributed county map, 21 county profiles, two verified regional indicators, historical charts, exact-year national references, descriptive sorting and comparisons of up to four counties. Net migration plus statistical adjustment stays separate from the unconnected direct migration measure.
 - Eurostat JSON-stat adapter and DZS PxWeb net/gross wage imports; explicit dimension selections, source flags, revisions, raw snapshots and anomaly review.
 - Historical Croatia/EU charts with accessible tables; dashboard indicator and time-range selections survive in the URL.
 - Five distinct administrations from 2011, sourced coalition periods, selected cabinet changes and original government programs. The 2016, 2020 and 2024 Plenković terms stay separate; caretaker service is included up to handover.
@@ -61,7 +63,8 @@ The Compose database binds only to localhost. The credentials in `.env.example` 
 | `/programs/[id]/document`                   | Hash-checked download of an explicitly published archived PDF      |
 | `/admin/summaries`                         | Authenticated summary queue; closed when no accounts are configured |
 | `/admin/summaries/[id]`                    | Private evidence review, draft editing, approval/rejection and audit history |
-| `/elections`, `/regions`                   | Navigation destinations with later-phase availability              |
+| `/elections`, `/elections/[slug]`          | Historical election filters, result charts, turnout, lists/candidates and official seats |
+| `/regions`, `/regions/[slug]`              | County map/table, profiles, history, national references and comparisons |
 | `/sources`, `/methodology`                 | Source catalogue and publication rules                             |
 | `/search?q=plaće`                          | Server-rendered catalogue search, including diacritic-free queries |
 | `/preview`                                 | Interactive synthetic chart with accessible table                  |
@@ -76,6 +79,7 @@ npm run typecheck
 npm test
 npm run test:ingestion
 npm run test:parties
+npm run test:elections
 npm run db:validate
 npm run build
 npx playwright install chromium
@@ -90,6 +94,8 @@ Phase 3 tests also cover administration/coalition boundaries, annual/quarterly/m
 Phase 4 adds registry/parser/status tests, isolated PostgreSQL tests for concurrent/repeated imports and retained versions, and desktop/mobile tests for nonparliamentary search, ceased records, four-party comparison, citations, PDF hashes and read-only downloads. See [party data contracts and maintainer commands](./docs/party-directory.md).
 
 Phase 5 adds grounding/authentication tests and extends the isolated party tests with actual PDF extraction, stubbed model generation, caching, role checks, concurrent edits, human approval checks and immutable approved history. `test:editorial` starts a second production server on port 3101, creates its own random PostgreSQL schema and synthetic PDF fixtures, then exercises editorial and public display on desktop/mobile. It removes its schema and archive afterward; no synthetic summaries enter the application database. Poppler `pdfinfo` and `pdftotext` must be installed on PATH (or configured via their executable-path variables). See [summary setup, workflow and limits](./docs/program-summaries.md).
+
+Phase 6 adds `npm run elections:import`, an isolated `test:elections` suite, regional statistical definitions and desktop/mobile election/county scenarios. See [exact source coverage, commands, denominators, geography and map licensing](./docs/elections-regions.md). Current upcoming schedules, local elections and older cycles have not been imported.
 
 `test:ingestion` loads `.env`, applies all migrations in a randomly named isolated PostgreSQL schema, and removes only that schema afterward. It checks concurrent reruns, failed/empty imports, anomaly staging, manual publication, retained revisions and snapshot integrity without writing test data into the public schema. `npm test` runs the unit tests; it also runs the isolated database test if `DATABASE_URL` is already in the process environment.
 
@@ -127,7 +133,7 @@ See [database contracts](./docs/data-contracts.md), [source mapping and import r
 
 Raw responses, DZS metadata and exact requests are retained in `DATA_SNAPSHOT_DIR` (default `.data/snapshots`, gitignored), with SHA-256 hashes in PostgreSQL. Store this directory on durable storage and back it up alongside PostgreSQL when running imports outside local development. Do not run import jobs on an ephemeral frontend filesystem. Publication dates remain unknown when the source API supplies only a dataset update timestamp.
 
-National histories start in 2015, so a full-term baseline for the 2011 administration is unavailable. DZS wages start in 2025 with NKD 2025, are explicitly nominal, and have no EU comparison or pre-2024-government baseline. Real wages and unconnected planned indicators remain unavailable. Do not concatenate incompatible wage classifications or use nominal wages as real wages. Phase 6 (historical elections and regions) is next; scheduling, S3 and deployment remain later work. Phase 5's real summary publication requires model credentials and actual human reviewers; see [setup and limitations](./docs/program-summaries.md).
+National histories start in 2015, so a full-term baseline for the 2011 administration is unavailable. DZS wages start in 2025 with NKD 2025, are explicitly nominal, and have no EU comparison or pre-2024-government baseline. Real wages and unconnected planned indicators remain unavailable. Do not concatenate incompatible wage classifications or use nominal wages as real wages. Phase 7 (accountability features) is next; broader election/regional coverage, scheduling, S3 and deployment remain work. Phase 5's real summary publication requires model credentials and actual human reviewers; see [setup and limitations](./docs/program-summaries.md).
 
 The dated parliamentary/leadership snapshot is in `src/lib/politics.ts`, separate from synthetic fixtures. Administration records are in `src/lib/governments.ts`, verified separately on 1 November 2026. These editorial facts retain their own verification dates. Registry identities and program revisions persist in PostgreSQL. Register updates use `npm run parties:import`, never page-load fetching. PDF storage uses `PROGRAM_DOCUMENT_DIR` (default `.data/programs`); back it up with PostgreSQL and statistical snapshots. See [party maintainer commands](./docs/party-directory.md) and [political sources](./docs/political-sources.md).
 

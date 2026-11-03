@@ -80,7 +80,7 @@ export function parseEurostat(def: SeriesDefinition, snapshot: Snapshot): Parsed
     const axis = axes[cube.id.indexOf(id)];
     if (axis.length !== 1 || axis[0] !== code) throw new Error(`Incompatible ${id}: expected ${code}.`);
   }
-  if (axes[cube.id.indexOf("geo")].some((geo) => !["HR", "EU27_2020"].includes(geo)))
+  if (axes[cube.id.indexOf("geo")].some((geo) => !(def.geographies ?? ["HR", "EU27_2020"]).includes(geo)))
     throw new Error("Unexpected geography.");
   const total = cube.size.reduce((a, b) => a * b, 1);
   if (!Number.isSafeInteger(total) || total > 200_000) throw new Error("Unexpected cube size.");

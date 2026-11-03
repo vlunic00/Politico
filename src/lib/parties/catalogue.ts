@@ -39,6 +39,7 @@ export type DirectoryParty = Omit<ParliamentaryParty, "seats"> & {
   id: string; seats?: number; website?: string;
   registration?: { name: string; abbreviation: string | null; status: "AKTIVAN" | "PRESTANAK"; registerNumber: string; book: number; registeredAt: string; statusDate: string | null; seat: string | null };
   programs: PublicProgram[];
+  electionRecords?: { partyId: string; context: string; description: string; sourceUrl: string; electionId?: string; publicationDate?: string | null }[];
 };
 export const registrationLabel = (status?: string) => status === "AKTIVAN" ? "Aktivna u registru" : status === "PRESTANAK" ? "Prestanak prema registru" : "Registracija nije verificirana";
 export const fallbackParties: DirectoryParty[] = parliamentaryParties.map((party) => ({ ...party, id: parliamentaryRegistryIds[party.slug], website: partyWebsites[parliamentaryRegistryIds[party.slug]], programs: [] }));
@@ -46,9 +47,10 @@ export function partySlug(id: string) {
   return Object.keys(parliamentaryRegistryIds).find((slug) => parliamentaryRegistryIds[slug] === id) ?? `registar-${id}`;
 }
 
-export const electionContextSchema = z.enum(["next-parliamentary", "parliamentary-2024", "next-presidential", "next-european", "next-local"]);
+export const electionContextSchema = z.enum(["next-parliamentary", "parliamentary-2020", "parliamentary-2024", "presidential-2024", "european-2024", "next-presidential", "next-european", "next-local"]);
 export const electionContexts = {
   "next-parliamentary": "Sljedeći parlamentarni izbori", "parliamentary-2024": "Parlamentarni izbori 2024.",
+  "parliamentary-2020": "Parlamentarni izbori 2020.", "presidential-2024": "Predsjednički izbori 2024./2025.", "european-2024": "Europski izbori 2024.",
   "next-presidential": "Sljedeći predsjednički izbori", "next-european": "Sljedeći europski izbori", "next-local": "Sljedeći lokalni izbori",
 } as const;
 const electionSource = "https://narodne-novine.nn.hr/clanci/sluzbeni/2024_04_50_857.html";

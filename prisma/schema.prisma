@@ -74,6 +74,7 @@ model SourceRevision {
   sourceUpdatedAt   DateTime?              @db.Timestamptz(3)
   observations      IndicatorObservation[]
   registrations     PartyRegistration[]
+  electionPublications ElectionPublication[]
 
   @@unique([sourceDatasetId, contentHash])
 }
@@ -212,6 +213,40 @@ model GeographicArea {
   validFrom    DateTime?              @db.Date
   validTo      DateTime?              @db.Date
   observations IndicatorObservation[]
+}
+
+model Election {
+  id           String                @id
+  title        String
+  kind         String
+  date         DateTime              @db.Date
+  round        Int
+  context      String
+  publications ElectionPublication[]
+}
+
+model ElectionPublication {
+  id            String          @id @default(cuid())
+  electionId    String
+  election      Election        @relation(fields: [electionId], references: [id], onDelete: Restrict)
+  revisionId    String          @unique
+  revision      SourceRevision  @relation(fields: [revisionId], references: [id], onDelete: Restrict)
+  status        String
+  metadata      Json
+  publishedAt   DateTime?       @db.Timestamptz(3)
+  contests      ElectionContest[]
+
+  @@index([electionId, publishedAt])
+}
+
+model ElectionContest {
+  id            String              @id @default(cuid())
+  publicationId String
+  publication   ElectionPublication @relation(fields: [publicationId], references: [id], onDelete: Restrict)
+  code          String
+  data          Json
+
+  @@unique([publicationId, code])
 }
 
 model IndicatorDefinition {

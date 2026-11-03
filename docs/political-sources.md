@@ -20,6 +20,8 @@ This parliamentary list is distinct from the official registry. Phase 4 imports 
 
 ## Leadership and orientation
 
+Phase 6 adds [official historical election imports and explicit identity links](./elections-regions.md), preserving list/coalition votes, candidates, seats, presidential proposers, source dates and independent future-candidacy status. These results do not replace the separately dated Sabor membership snapshot.
+
 Party profiles link directly to verified official leadership sources. Možemo! has two coordinators, both shown with equal space, rather than an invented sole leader. Leadership and orientation for other parties remain unavailable until verified.
 
 Orientation labels are explicitly marked **self-description** and linked to the original statement. They are not inferred from the party name or from parliamentary membership. The data module records the classification method and source; the shared verification date applies to these entries.

@@ -26,6 +26,10 @@ const rules = [
     "Službeni program ima prednost pred sažetkom. AI sažeci su na hrvatskom, označeni, vezani uz verziju izvornika i objavljeni samo nakon ljudske provjere. Citati ostaju na jeziku izvornika. Nepotpuna ekstrakcija ne dokazuje da tema nije navedena.",
   ],
   [
+    "Izborni i regionalni obuhvat",
+    "Izborne jedinice nisu županije. Glasove i mandate koalicijskih lista ne dijelimo na stranke. Nazivnici izlaznosti i udjela ostaju navedeni za svaki krug. Regionalne usporedbe koriste istu godinu i definiciju; migracijski saldo sa statističkom prilagodbom nije izravan broj doseljenih minus odseljenih.",
+  ],
+  [
     "Revizije i kontinuitet",
     "Čuvamo izvorne snimke i revizije gdje licenca dopušta. Neuspješan ili prazan uvoz ne smije izbrisati prethodno validirane podatke. Sumnjive promjene čekaju pregled.",
   ],

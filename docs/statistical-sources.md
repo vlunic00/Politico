@@ -50,6 +50,6 @@ These are nominal averages, not medians, not real wages and not all employed per
 
 ## Review and operations
 
-Initial tourism data are staged because pandemic-era year-on-year changes exceed the conservative anomaly threshold. Review the source snapshot and documented context before explicit publication; no exception bypass is coded. Other candidates without a verified adapter remain pending, including county statistics and election-related data reserved for later phases.
+Initial tourism data are staged because pandemic-era year-on-year changes exceed the conservative anomaly threshold. Review the source snapshot and documented context before explicit publication; no exception bypass is coded. Phase 6 connects county GDP and a separate net-migration-plus-statistical-adjustment definition through Eurostat; see [regional selections and source review](./elections-regions.md). Direct county migration remains pending. Election results use a separate DIP pipeline and do not substitute an irregular-election series into annual statistical observations.
 
 Imports are explicit CLI jobs, not page-load fetches. Scheduling, object storage, an authenticated review UI and production deployment remain later work. Keep PostgreSQL and the snapshot directory backed up together. Source-link checks and a live import were run during implementation; future source availability is not guaranteed.

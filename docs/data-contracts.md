@@ -4,6 +4,8 @@ The statistical foundation is PostgreSQL and Prisma. Phase 4 adds sourced party 
 
 Phase 5 adds `ProgramExtraction` (page text/hash per source version), `ProgramSummary` (generation provenance, original JSON, editable draft, review status and approved editions), and append-only `SummaryReview` snapshots. All summaries require Croatian (`hr-HR`) and exact source quotations; only approved records are public. See [summary contracts and editorial authorization](./program-summaries.md). The migration is additive and preserves existing sources, programs and observations.
 
+Phase 6 adds `Election`, immutable `ElectionPublication` records tied to source revisions, and per-area `ElectionContest` typed JSON. Regional indicators reuse the observation platform with explicit geography allowlists and minimum history for every configured county. Election dates/rounds, candidate/list votes, minority multi-selection rules, result status, confirmed party/proposer identities and publication provenance remain distinct. See [election and regional contracts](./elections-regions.md). The new migration is additive.
+
 ```text
 Topic → IndicatorDefinition → IndicatorObservation ← GeographicArea
 DataSource → SourceDataset → SourceRevision → IndicatorObservation

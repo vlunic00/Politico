@@ -2,8 +2,9 @@ import "server-only";
 import { cache } from "react";
 import { getDb } from "../db";
 import { parliamentaryParties } from "../politics";
-import { fallbackParties, parliamentaryRegistryIds, partyWebsites, programEvidenceSchema, registerDatasetId, type DirectoryParty, type PublicProgram } from "./catalogue";
+import { fallbackParties, parliamentaryRegistryIds, partyWebsites, partyElectionRecords, programEvidenceSchema, registerDatasetId, type DirectoryParty, type PublicProgram } from "./catalogue";
 import { summarySchema } from "./summary-contract";
+import { getElections } from "../elections/data";
 
 export const getPartyDirectory = cache(async () => {
   const fallback = { parties: fallbackParties, checkedAt: null, retrievedAt: null, revision: null, importStatus: null };
@@ -15,6 +16,11 @@ export const getPartyDirectory = cache(async () => {
       db.sourceDataset.findUnique({ where: { id: registerDatasetId }, include: { ingestionRuns: { orderBy: { startedAt: "desc" }, take: 1 } } }),
     ]);
     if (!revision) return { ...fallback, status: "unimported" as const };
+    const electionData = await getElections();
+    const electionRecords = electionData.records.flatMap((election) => election.contests.filter((contest) => !contest.countyId && contest.code !== "22").flatMap((contest) => contest.choices.flatMap((choice) => choice.members.filter((member) => member.partyId).map((member) => ({
+      partyId: member.partyId!, context: election.context, electionId: election.id, description: `${election.title} · ${contest.name} · ${member.role === "proposer" ? "predlagatelj kandidata" : "kandidacijska lista"}: ${choice.name}`,
+      sourceUrl: contest.sourceUrl, publicationDate: election.metadata.publicationDate,
+    })))));
     const parties: DirectoryParty[] = revision.registrations.map((registration) => {
       const legacy = parliamentaryParties.find((party) => parliamentaryRegistryIds[party.slug] === registration.partyId);
       const programs: PublicProgram[] = registration.party.programs.flatMap((program) => program.versions.map((version) => ({
@@ -25,6 +31,7 @@ export const getPartyDirectory = cache(async () => {
       })));
       return { ...legacy, id: registration.partyId, slug: registration.party.slug, name: legacy?.name ?? registration.name,
         abbreviation: registration.abbreviation ?? legacy?.abbreviation ?? "—", website: partyWebsites[registration.partyId], programs,
+        electionRecords: [...electionRecords, ...partyElectionRecords.filter((record) => !electionData.records.some((election) => election.context === record.context))].filter((record) => record.partyId === registration.partyId),
         registration: { name: registration.name, abbreviation: registration.abbreviation, status: registration.status as "AKTIVAN" | "PRESTANAK",
           registerNumber: registration.registerNumber, book: registration.book, registeredAt: registration.registeredAt.toISOString().slice(0, 10),
           statusDate: registration.statusDate?.toISOString().slice(0, 10) ?? null, seat: registration.seat },

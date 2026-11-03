@@ -1,0 +1,48 @@
+import Link from "next/link";
+import { counties, countyPaths, mapLicense, mapSource, parseRegionalSelection, regionalMetrics } from "@/lib/regions/catalogue";
+import { getRegionalStatistics } from "@/lib/regions/data";
+import { formatDate, formatNumber } from "@/lib/statistics/series";
+import { MetricLineChart } from "./metric-line-chart";
+import { EmptyState } from "./empty-state";
+
+export async function RegionalExplorer({ query, profile }: { query: Record<string, string | string[] | undefined>; profile?: (typeof counties)[number] }) {
+  const data = await getRegionalStatistics();
+  const parsed = parseRegionalSelection(query);
+  const selection = parsed.success ? parsed.data : { metric: "regional-gdp" as const, year: undefined, county: [], order: "name" as const };
+  const series = data.series[selection.metric];
+  const years = [...new Set(series?.observations.filter((point) => point.geographyId !== "HR").map((point) => point.year) ?? [])].sort((a, b) => b - a);
+  const historyYears = years.length ? Array.from({ length: years[0] - years.at(-1)! + 1 }, (_, index) => years.at(-1)! + index) : [];
+  const year = selection.year ?? years[0];
+  const invalid = !parsed.success || (selection.year !== undefined && !!years.length && !years.includes(selection.year));
+  const selected = profile ? [profile] : selection.county.map((id) => counties.find((county) => county.id === id)!);
+  const point = (id: string, selectedYear = year) => series?.observations.find((point) => point.geographyId === id && point.year === selectedYear);
+  const rows = [...counties].sort((a, b) => selection.order === "name" ? a.name.localeCompare(b.name, "hr") : ((point(a.id)?.value ?? (selection.order === "asc" ? Infinity : -Infinity)) - (point(b.id)?.value ?? (selection.order === "asc" ? Infinity : -Infinity))) * (selection.order === "asc" ? 1 : -1) || a.name.localeCompare(b.name, "hr"));
+  const national = point("HR");
+  const values = counties.flatMap((county) => point(county.id) ? [point(county.id)!.value] : []);
+  const min = Math.min(...values), max = Math.max(...values);
+  const palette = ["#e5eef1", "#b6ced6", "#88aebc", "#568696", "#255969"];
+  const link = (slug: string) => `/regions/${slug}?metric=${selection.metric}${year ? `&year=${year}` : ""}`;
+  const control = "min-w-0 w-full rounded-lg border bg-white p-2.5 text-sm";
+  return <div className="space-y-6">
+    <form action={profile ? `/regions/${profile.slug}` : "/regions"} className="surface grid gap-4 p-5 sm:grid-cols-2">
+      <label className="grid gap-2 text-xs">Regionalni pokazatelj<select name="metric" defaultValue={selection.metric} className={control}>{Object.entries(regionalMetrics).map(([id, label]) => <option key={id} value={id}>{label}</option>)}</select></label>
+      <label className="grid gap-2 text-xs">Referentna godina<select name="year" defaultValue={year ?? ""} disabled={!years.length} className={control}>{!years.length && <option value="">Nije dostupna</option>}{years.map((year) => <option key={year}>{year}</option>)}</select></label>
+      {!profile && <><label className="grid gap-2 text-xs">Poredak županija<select name="order" defaultValue={selection.order} className={control}><option value="name">Abecedno</option><option value="desc">Od veće prema manjoj vrijednosti</option><option value="asc">Od manje prema većoj vrijednosti</option></select></label>{[0, 1, 2, 3].map((index) => <label key={index} className="grid gap-2 text-xs">Županija za usporedbu {index + 1}<select name="county" defaultValue={selection.county[index] ?? ""} className={control}><option value="">Odaberite županiju</option>{counties.map((county) => <option value={county.id} key={county.id}>{county.name}</option>)}</select></label>)}</>}
+      <button className="w-fit rounded-lg bg-primary px-4 py-3 text-xs font-semibold text-white">Prikaži regionalne podatke</button>
+    </form>
+    {invalid ? <p role="alert" className="surface p-5">Nevaljan odabir pokazatelja, godine ili županija. Odaberite do četiri različite županije i dostupnu godinu.</p> : <>
+      <section className="surface p-5" aria-label="Stanje regionalnih podataka"><p className="text-sm">{series ? `${regionalMetrics[selection.metric]} · ${year}. · ${series.unit}` : "Regionalna serija nije dostupna za prikaz."}</p><p className="subtle mt-2">{series?.definition ?? "Podaci se prikazuju tek nakon provjerenog uvoza."}</p>{series && <><p className="mt-4 text-sm font-semibold">Hrvatska · ista godina i definicija: {national ? `${formatNumber(national.value)} ${series.unit}` : "Nije dostupno"}</p><p className="subtle mt-3">{series.limitations}</p><p className="subtle mt-3">Preuzeto {formatDate(series.source.retrievedAt)} · posljednja uspješna provjera {formatDate(series.source.checkedAt)} · ažuriranje skupa {formatDate(series.source.updatedAt)}. Datum izvorne objave nije zasebno potvrđen.</p><div className="mt-3 flex flex-wrap gap-5 text-xs"><a href={series.source.url} className="text-link" target="_blank" rel="noreferrer">Eurostat · točan skup i odabir ↗</a><a href={series.source.methodologyUrl} className="text-link" target="_blank" rel="noreferrer">Metodologija ↗</a></div><details className="subtle mt-3"><summary>Revizija izvora</summary><p className="break-all">SHA-256: {series.source.revision}</p></details></>}</section>
+      {!series && <section className="surface"><EmptyState title="Regionalni uvoz nije dostupan" description={data.status === "error" ? "Privremena pogreška baze. Ne zamjenjujemo županijske podatke nacionalnim prosjekom." : "Nakon uvoza prikazat će se iste referentne godine i izvorne definicije za 20 županija i Grad Zagreb."} /></section>}
+      {!profile && <section className="surface grid gap-6 p-5 lg:grid-cols-2" aria-label="Karta i vrijednosti županija"><figure><figcaption className="text-sm font-semibold">Županije · NUTS 2024{year ? ` · ${year}.` : ""}</figcaption><svg viewBox="0 0 520 520" className="mt-4 w-full" role="group" aria-label="Klikabilna karta 20 županija i Grada Zagreba">{countyPaths().map((shape) => {
+        const county = counties.find((county) => county.id === shape.id)!;
+        const value = point(county.id)?.value;
+        const fill = value === undefined ? "#e6e9ec" : palette[max === min ? 2 : Math.min(4, Math.floor((value - min) / (max - min) * 5))];
+        return <a key={county.id} href={link(county.slug)} aria-label={`${county.name}: ${value === undefined ? "nije dostupno" : `${formatNumber(value)} ${series?.unit ?? ""}`}`}><path d={shape.d} fill={fill} stroke="#fff" strokeWidth={1.3} fillRule="evenodd"><title>{county.name} · {value === undefined ? "nije dostupno" : formatNumber(value)}</title></path></a>;
+      })}</svg><p className="subtle">Svjetlije: manja vrijednost · tamnije: veća vrijednost · sivo: nema podatka. Boje nisu ocjena kvalitete života ili vlasti.</p><p className="subtle mt-3">Geometrija: <a className="underline" href={mapSource}>Eurostat/GISCO, NUTS 2024</a>. © EuroGeographics for the administrative boundaries. <a className="underline" href={mapLicense}>Uvjeti korištenja</a>.</p></figure>
+        <div><h2 className="section-title">Vrijednosti za istu godinu</h2><p className="subtle mt-2">Deskriptivan poredak odabranog pokazatelja, bez ukupne ocjene županija. Nacionalna referenca nije zamjena za nedostajući podatak.</p><div className="mt-4 overflow-x-auto"><table className="w-full text-left text-xs"><caption className="sr-only">Županijske vrijednosti · {year ?? "nedostupna godina"}</caption><thead><tr><th className="p-2" scope="col">Županija</th><th className="p-2 text-right" scope="col">{series?.unit ?? "Vrijednost"}</th><th className="p-2" scope="col">Oznake</th></tr></thead><tbody>{rows.map((county) => <tr key={county.id} className="border-t"><th scope="row" className="p-2 font-normal"><Link href={link(county.slug)} className="text-link text-xs">{county.name}</Link></th><td className="p-2 text-right">{point(county.id) ? formatNumber(point(county.id)!.value) : "Nije dostupno"}</td><td className="p-2">{point(county.id)?.flags || "—"}</td></tr>)}</tbody></table></div></div>
+      </section>}
+      {selected.length > 0 && <section className="surface p-5"><h2 className="section-title">Usporedba odabranih županija · {year ?? ""}.</h2><div className="mt-4 grid gap-4 sm:grid-cols-2">{selected.map((county) => <div key={county.id} className="rounded-lg border p-4"><Link href={link(county.slug)} className="text-link text-sm">{county.name}</Link><p className="mt-3 text-xl font-semibold">{point(county.id) ? `${formatNumber(point(county.id)!.value)} ${series?.unit ?? ""}` : "Nije dostupno"}</p><p className="subtle mt-2">{national && point(county.id) ? `Razlika prema nacionalnoj referenci: ${formatNumber(point(county.id)!.value - national.value)} ${series?.unit ?? ""}.` : "Razlika se ne računa bez oba podatka za istu godinu."}</p></div>)}</div></section>}
+      {selected.map((county) => <section key={county.id} className="surface min-w-0 p-5"><h2 className="section-title">{county.name} · povijest</h2><p className="subtle my-3">{county.id} · statistička regija NUTS 3 (2024), povezana s administrativnom županijom. Ne spajamo serije pod drugim kodovima. p: privremeno; e: procjena; r: revidirano; b: prekid serije; d: različita definicija.</p><MetricLineChart title={`${county.name} · ${regionalMetrics[selection.metric]}`} labels={[county.name, "Hrvatska"]} unit={series?.unit ?? ""} points={series ? historyYears.map((year) => ({ period: String(year), croatia: point(county.id, year)?.value ?? null, eu: point("HR", year)?.value ?? null, flags: [point(county.id, year)?.flags, point("HR", year)?.flags].filter(Boolean).join("; ") })) : []} /></section>)}
+    </>}
+  </div>;
+}

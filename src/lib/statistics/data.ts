@@ -26,7 +26,7 @@ export const getStatistics = cache(async () => {
     });
     for (const revision of revisions) {
       const def = seriesDefinitions.find((d) => revision.sourceDatasetId === `${d.source}:${d.slug}`);
-      if (!def) continue;
+      if (!def || def.geographies) continue;
       const stored = definitions.find((d) => d.id === def.slug)!;
       const dataset = revision.sourceDataset;
       const result = buildSeries({ ...def, unit: stored.unit, frequency: stored.frequency, definition: stored.definition, limitations: stored.limitations ?? "" }, revision.observations.map((point) => ({

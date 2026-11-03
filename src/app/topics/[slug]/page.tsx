@@ -7,6 +7,8 @@ import { SourcePopover } from "@/components/source-popover";
 import { frequencyLabels, indicators, topics } from "@/lib/catalogue";
 import { getStatistics } from "@/lib/statistics/data";
 import { formatDate, formatNumber, formatPeriod } from "@/lib/statistics/series";
+import Link from "next/link";
+import { RegionalExplorer } from "@/components/regional-explorer";
 
 export function generateStaticParams() {
   return topics.map(({ slug }) => ({ slug }));
@@ -35,6 +37,7 @@ export default async function TopicPage({
   const { slug } = await params;
   const topic = topics.find((item) => item.slug === slug);
   if (!topic) notFound();
+  if (slug === "regions") return <><Breadcrumb label={topic.name} /><PageHeading eyebrow="Statistička tema" title={topic.name} description={topic.description} /><p className="subtle mb-5" id="regional-migration">Izravni saldo doseljenih i odseljenih još čeka zaseban DZS adapter; serija sa statističkom prilagodbom ima zasebnu definiciju.</p><Link href="/regions" className="text-link mb-5">Regionalni pregled i županijski profili ↗</Link><RegionalExplorer query={{}} /></>;
   const statistics = await getStatistics();
   const entries = indicators.filter(
     (indicator) => indicator.topic === topic.slug,

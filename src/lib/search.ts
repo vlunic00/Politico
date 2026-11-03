@@ -1,5 +1,7 @@
 import { indicators, sources, topics } from "./catalogue";
 import { parliamentaryParties, type ParliamentaryParty } from "./politics";
+import { counties } from "./regions/catalogue";
+import { elections } from "./elections/catalogue";
 
 export function normalizeSearch(value: string) {
   return value
@@ -14,6 +16,8 @@ export function searchCatalogue(query: string, parties: (Pick<ParliamentaryParty
   const normalized = normalizeSearch(query);
   if (!normalized) return [];
   return [
+    ...counties.map((county) => ({ title: county.name, description: "Županijski profil · regionalni pokazatelji i nacionalna referenca", href: `/regions/${county.slug}`, type: "Županija" })),
+    ...elections.map((election) => ({ title: election.title, description: `${election.date} · ${election.round}. krug · službeni izborni izvori`, href: `/elections/${election.id}`, type: "Izbori" })),
     ...parties.map((party) => ({
       title: `${party.name} (${party.abbreviation})`,
       description: [party.registration?.name, party.leaders?.map((leader) => leader.name).join(", ")].filter(Boolean).join(" · ") || "Politička stranka · datirani izvori",
@@ -29,7 +33,7 @@ export function searchCatalogue(query: string, parties: (Pick<ParliamentaryParty
     ...indicators.map((indicator) => ({
       title: indicator.name,
       description: indicator.description,
-      href: `/topics/${indicator.topic}#${indicator.slug}`,
+      href: indicator.topic === "regions" && indicator.slug !== "regional-migration" ? `/regions?metric=${indicator.slug}` : `/topics/${indicator.topic}#${indicator.slug}`,
       type: "Pokazatelj",
     })),
     ...sources.map((source) => ({

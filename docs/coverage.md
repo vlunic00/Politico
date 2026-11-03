@@ -1,8 +1,8 @@
 # Statistical coverage
 
-Generated 2026-10-24T15:03:02.592Z by `npm run data:coverage`.
+Generated 2026-11-03T19:54:06.776Z by `npm run data:coverage`.
 
-31 active indicators; 14 awaiting verification; 2454 published observation records including retained revisions. UI reads only the newest published revision for each series. All 16 topic categories remain available.
+33 active indicators; 13 awaiting verification; 2825 published observation records including retained revisions. UI reads only the newest published revision for each series. All 16 topic categories remain available.
 
 | Indicator | Coverage | Source dataset | Latest reference start | Latest import |
 | --- | --- | --- | --- | --- |
@@ -36,8 +36,9 @@ Generated 2026-10-24T15:03:02.592Z by `npm run data:coverage`.
 | Gross external debt | AWAITING_VERIFICATION | Not connected | — | Not imported |
 | Tourist nights | AWAITING_VERIFICATION | eurostat: tour_occ_nim | — | NEEDS_REVIEW |
 | Industrial production | ACTIVE | eurostat: sts_inpr_m | 2026-08-01 | SUCCEEDED |
-| County GDP per capita | AWAITING_VERIFICATION | Not connected | — | Not imported |
+| County GDP per capita | ACTIVE | eurostat: nama_10r_3gdp | 2024-01-01 | SUCCEEDED |
 | County net migration | AWAITING_VERIFICATION | Not connected | — | Not imported |
+| County net migration plus statistical adjustment | ACTIVE | eurostat: demo_r_gind3 | 2025-01-01 | SUCCEEDED |
 | Youth unemployment | ACTIVE | eurostat: une_rt_m | 2026-06-01 | SUCCEEDED |
 | Employment rate (20–64) | ACTIVE | eurostat: lfsi_emp_a | 2025-01-01 | SUCCEEDED |
 | Gross fixed capital formation | ACTIVE | eurostat: nama_10_gdp | 2025-01-01 | SUCCEEDED |
@@ -52,6 +53,8 @@ Generated 2026-10-24T15:03:02.592Z by `npm run data:coverage`.
 | Average net earnings (nominal) | ACTIVE | dzs: Zaposlenost i plaće/Od 2025/T01.px | 2026-08-01 | SUCCEEDED |
 | Average gross earnings (nominal) | ACTIVE | dzs: Zaposlenost i plaće/Od 2025/T01.px | 2026-08-01 | SUCCEEDED |
 
-Sources and exact dimension selections: [definitions](../src/lib/statistics/definitions.ts). Eurostat histories start in 2015; DZS wages start in 2025 (NKD 2025). Pending definitions are planning metadata and are never substituted with estimates.
+Sources and exact dimension selections: [definitions](../src/lib/statistics/definitions.ts). Eurostat histories start in 2015 where available; DZS wages start in 2025 (NKD 2025). Pending definitions are planning metadata and are never substituted with estimates.
 
-Tourism history is staged because pandemic-era changes trigger the anomaly guard. Inspect and review the stored snapshot before publication; do not disable validation. Real wages, county data and other unconnected definitions remain pending. No indicators have been declared permanently unavailable.
+Regional GDP and net migration plus statistical adjustment cover 20 counties and the City of Zagreb, with a separate HR reference. The reference date in this table is the HR series date; the regional explorer selects the latest county year, currently 2024. Individual county histories can start later than 2015. Direct county migration (arrivals minus departures) remains a separate unconnected definition; it is not replaced by the statistical-adjustment measure. See [election and regional contracts](./elections-regions.md).
+
+Tourism history remains staged because pandemic-era changes trigger the anomaly guard. Inspect and review the stored snapshot before publication; do not disable validation. Real wages and other unconnected definitions remain pending. No indicators have been declared permanently unavailable.

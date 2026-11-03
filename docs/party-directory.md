@@ -10,7 +10,7 @@ The explicit identity crosswalk in `src/lib/parties/catalogue.ts` connects the e
 
 Parliamentary membership and leadership retain their 24 October verification date and 24 August Sabor reference table. Coalition participation uses separately sourced Phase 3 evidence; unverified parties are not automatically called opposition. Existing orientation labels remain sourced self-descriptions, with no inferred labels for other parties.
 
-Selected historical participation is connected to [DIP's official 2024 V-constituency publication in Narodne novine](https://narodne-novine.nn.hr/clanci/sluzbeni/2024_04_50_857.html). It identifies joint lists separately from parties. It does not allocate coalition votes/seats to individual parties and does not claim to cover every contestant or constituency. Missing participation evidence stays unverified. Future parliamentary, presidential, European and local contexts have no inferred candidacies. Comprehensive historical result imports remain Phase 6.
+Phase 4's initial historical evidence used [DIP's official 2024 V-constituency publication in Narodne novine](https://narodne-novine.nn.hr/clanci/sluzbeni/2024_04_50_857.html). Phase 6 now connects published parliamentary 2020/2024, European 2024 and presidential 2024/25 result evidence to profiles and filters; see [coverage and identity rules](./elections-regions.md). The original partial evidence remains a fallback for unimported contexts. Joint lists remain distinct from individual parties, and presidential proposers remain distinct from candidacies. Missing evidence stays unverified. No future candidacy is inferred from registration or historical participation.
 
 ## Registry persistence and imports
 

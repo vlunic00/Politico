@@ -501,6 +501,7 @@ const plannedIndicators: Indicator[] = [
 ];
 
 const additionalIndicators: Pick<Indicator, "slug" | "name" | "nameEn" | "topic">[] = [
+  { slug: "regional-migration-adjusted", name: "Migracijski saldo sa statističkom prilagodbom", nameEn: "County net migration plus statistical adjustment", topic: "regions" },
   { slug: "youth-unemployment", name: "Nezaposlenost mladih", nameEn: "Youth unemployment", topic: "employment" },
   { slug: "employment-rate", name: "Stopa zaposlenosti (20–64)", nameEn: "Employment rate (20–64)", topic: "employment" },
   { slug: "investment", name: "Investicije u fiksni kapital", nameEn: "Gross fixed capital formation", topic: "economy" },

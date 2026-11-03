@@ -2,6 +2,9 @@ import { NextResponse, type NextRequest } from "next/server";
 import { topics } from "./lib/catalogue";
 import { getPartyDirectory } from "./lib/parties/data";
 import { authenticateEditor } from "./lib/editorial-auth";
+import { counties } from "./lib/regions/catalogue";
+import { elections } from "./lib/elections/catalogue";
+import { getElections } from "./lib/elections/data";
 
 export async function proxy(request: NextRequest) {
   if (request.nextUrl.pathname.startsWith("/admin")) {
@@ -16,6 +19,12 @@ export async function proxy(request: NextRequest) {
   let slug: string;
   try { slug = decodeURIComponent(request.nextUrl.pathname.split("/")[2]); }
   catch { return NextResponse.rewrite(new URL("/404", request.url), { status: 404 }); }
+  if (request.nextUrl.pathname.startsWith("/regions/")) return counties.some((county) => county.slug === slug) ? NextResponse.next() : NextResponse.rewrite(new URL("/404", request.url), { status: 404 });
+  if (request.nextUrl.pathname.startsWith("/elections/")) {
+    if (!elections.some((election) => election.id === slug)) return NextResponse.rewrite(new URL("/404", request.url), { status: 404 });
+    if ((await getElections()).status === "error") return new NextResponse("Izborna baza privremeno nije dostupna.", { status: 503 });
+    return NextResponse.next();
+  }
   if (request.nextUrl.pathname.startsWith("/parties/")) {
     if (slug === "preview") return NextResponse.next();
     const directory = await getPartyDirectory();
@@ -31,4 +40,4 @@ export async function proxy(request: NextRequest) {
   return NextResponse.next();
 }
 
-export const config = { matcher: ["/topics/:slug", "/compare/:slug", "/parties/:slug", "/admin/:path*"] };
+export const config = { matcher: ["/topics/:slug", "/compare/:slug", "/parties/:slug", "/regions/:slug", "/elections/:slug", "/admin/:path*"] };

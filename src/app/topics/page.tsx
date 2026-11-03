@@ -3,12 +3,15 @@ import { PageHeading } from "@/components/page-heading";
 import { TopicCard } from "@/components/topic-card";
 import { indicators, topics } from "@/lib/catalogue";
 import { getStatistics } from "@/lib/statistics/data";
+import { getRegionalStatistics } from "@/lib/regions/data";
 
 export const metadata: Metadata = { title: "Statističke teme" };
 
 export const dynamic = "force-dynamic";
 export default async function TopicsPage() {
   const { series } = await getStatistics();
+  const regional = await getRegionalStatistics();
+  const active = { ...series, ...regional.series };
   return (
     <>
       <PageHeading
@@ -20,7 +23,7 @@ export default async function TopicsPage() {
         {[
           [topics.length, "statističkih tema"],
           [indicators.length, "pokazatelja u katalogu"],
-          [Object.keys(series).length, "verificiranih serija"],
+          [Object.keys(active).length, "verificiranih serija"],
         ].map(([value, label]) => (
           <div key={label} className="surface flex items-baseline gap-3 p-5">
             <span className="text-2xl font-semibold">{value}</span>
@@ -30,7 +33,7 @@ export default async function TopicsPage() {
       </div>
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         {topics.map((topic) => (
-          <TopicCard key={topic.slug} topic={topic} activeCount={indicators.filter((i) => i.topic === topic.slug && series[i.slug]).length} />
+          <TopicCard key={topic.slug} topic={topic} activeCount={indicators.filter((i) => i.topic === topic.slug && active[i.slug]).length} />
         ))}
       </div>
       <p className="subtle mt-6">

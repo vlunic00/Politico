@@ -13,8 +13,10 @@ const contentHash = (def: SeriesDefinition, snapshot: Snapshot) => createHash("s
 
 export function reviewReasons(def: SeriesDefinition, incoming: Comparable[], previous: Comparable[]) {
   const reasons: string[] = [];
-  const hr = incoming.filter((point) => point.geographyId === "HR");
-  if (hr.length < def.minimumHistory) reasons.push(`Croatian history requires ${def.minimumHistory} observations; received ${hr.length}.`);
+  for (const geography of def.geographies ?? ["HR"]) {
+    const count = incoming.filter((point) => point.geographyId === geography).length;
+    if (count < def.minimumHistory) reasons.push(`${geography === "HR" ? "Croatian" : geography} history requires ${def.minimumHistory} observations; received ${count}.`);
+  }
   const current = new Map(incoming.map((point) => [key(point), point]));
   if (current.size !== incoming.length) throw new Error("Duplicate observations in source.");
   for (const point of previous) {
@@ -26,7 +28,7 @@ export function reviewReasons(def: SeriesDefinition, incoming: Comparable[], pre
       reasons.push(`Large historical revision: ${key(point)} (${point.value} → ${replacement.value}).`);
   }
   // shortcut: conservative fixed anomaly thresholds, calibrate per source after observing real revision patterns.
-  for (const geo of ["HR", "EU27_2020"]) {
+  for (const geo of def.geographies ?? ["HR", "EU27_2020"]) {
     const points = incoming.filter((p) => p.geographyId === geo).sort((a, b) => a.periodStart.localeCompare(b.periodStart));
     for (let i = 1; i < points.length; i++) {
       const a = points[i - 1], b = points[i];
@@ -47,8 +49,8 @@ async function activate(tx: Prisma.TransactionClient, def: SeriesDefinition, rev
     where: { id: def.slug },
     data: {
       definition: def.definition, unit: def.unit, frequency: def.frequency,
-      sourceDatasetId: `${def.source}:${def.slug}`, geographicCoverage: def.source === "eurostat" ? ["HR", "EU27_2020"] : ["HR"],
-      preferredComparator: def.source === "eurostat" ? "EU27_2020" : null,
+      sourceDatasetId: `${def.source}:${def.slug}`, geographicCoverage: def.geographies ?? (def.source === "eurostat" ? ["HR", "EU27_2020"] : ["HR"]),
+      preferredComparator: def.source === "eurostat" && !def.geographies ? "EU27_2020" : null,
       limitations: def.limitations,
       minimumHistoryPeriods: def.minimumHistory, coverageStatus: "ACTIVE",
     },
@@ -75,7 +77,7 @@ export async function ingest(
     if (!parsed.observations.length) throw new Error("Empty import; published data preserved.");
     if (parsed.observations.some((point) => point.periodStart > snapshot.retrievedAt.slice(0, 10))) throw new Error("Future reference period.");
     const boundedShare = ["PC", "PC_ACT", "PC_POP"].includes(def.dimensions.unit) || def.slug === "income-inequality";
-    if (parsed.observations.some((p) => (boundedShare && (p.value < 0 || p.value > 100)) || (def.change === "percent" && p.value < 0)))
+    if (parsed.observations.some((p) => (boundedShare && (p.value < 0 || p.value > 100)) || (def.change === "percent" && def.dimensions.indic_de !== "CNMIGRAT" && p.value < 0)))
       throw new Error("Value outside the indicator's valid range.");
     const hash = contentHash(def, snapshot);
     const directory = options.snapshotDirectory ?? process.env.DATA_SNAPSHOT_DIR ?? ".data/snapshots";
@@ -130,7 +132,7 @@ export async function publishReviewedRevision(db: PrismaClient, def: SeriesDefin
     await tx.$executeRaw`SELECT pg_advisory_xact_lock(hashtext(${`${def.source}:${def.slug}`}))`;
     const revision = await tx.sourceRevision.findUniqueOrThrow({ where: { id: revisionId }, include: { observations: true } });
     if (revision.sourceDatasetId !== `${def.source}:${def.slug}` || !revision.observations.length || revision.observations.some((p) => p.publishedAt)) throw new Error("Revision is not a staged series for this definition.");
-    if (revision.observations.filter((p) => p.geographyId === "HR").length < def.minimumHistory || revision.observations.some((p) => p.unit !== def.unit || p.frequency !== def.frequency || p.methodologyVersion !== `${def.dataset}:${JSON.stringify(def.dimensions)}`))
+    if ((def.geographies ?? ["HR"]).some((geography) => revision.observations.filter((p) => p.geographyId === geography).length < def.minimumHistory) || revision.observations.some((p) => !(def.geographies ?? ["HR", "EU27_2020"]).includes(p.geographyId) || p.unit !== def.unit || p.frequency !== def.frequency || p.methodologyVersion !== `${def.dataset}:${JSON.stringify(def.dimensions)}`))
       throw new Error("Staged data do not meet the definition or minimum history requirements.");
     const newer = await tx.indicatorObservation.findFirst({ where: { indicatorId: def.slug, publishedAt: { not: null }, retrievedAt: { gt: revision.retrievedAt } } });
     if (newer) throw new Error("A newer series is already published; refusing to roll back.");

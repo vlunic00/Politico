@@ -22,7 +22,7 @@ export default async function SearchPage({
       <PageHeading
         eyebrow="Pretraživanje kataloga"
         title={query ? `Rezultati za „${query}”` : "Što želite istražiti?"}
-        description="Pretražite političke stranke, pokazatelje, teme i institucionalne izvore. Pretraga podržava hrvatske dijakritičke znakove."
+        description="Pretražite stranke, izbore, županije, pokazatelje, teme i institucionalne izvore. Pretraga podržava hrvatske dijakritičke znakove."
       />
       {results.length ? (
         <div className="surface divide-y">
