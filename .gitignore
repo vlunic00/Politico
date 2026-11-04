@@ -11,3 +11,4 @@ src/generated/
 *.log
 .DS_Store
 .data/
+docs/phases/

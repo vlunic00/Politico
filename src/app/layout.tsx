@@ -9,7 +9,7 @@ export const metadata: Metadata = {
     template: `%s | ${appName}`,
   },
   description:
-    "Neovisan pregled hrvatskih javnih podataka, institucija i političkog sustava. Razvojna verzija bez povezanih opažanja.",
+    "Neovisan pregled hrvatskih javnih podataka, institucija i političkog sustava s datiranim izvorima i jasno naznačenim nedostupnim podacima.",
   robots: { index: false, follow: false },
 };
 

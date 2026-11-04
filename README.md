@@ -1,6 +1,6 @@
 # Croatia Political Observatory
 
-Phases 1–7 of [the development guide](./Development%20guide.md): a Croatian Next.js frontend with a PostgreSQL statistical platform, government history, the official party register, reviewed Croatian AI summaries, official election history, county exploration and an initial accountability dossier. The dashboard uses validated Eurostat and DZS observations, historical charts, compatible comparisons and source metadata. Political facts retain their separately dated sources; each phase documents its current coverage. Starting with Phase 7, [learning walkthroughs](./docs/phases/phase-07.md) explain the steps, decisions, failures and fixes.
+Phases 1–7 of [the development guide](./Development%20guide.md): a Croatian Next.js frontend with a PostgreSQL statistical platform, government history, the official party register, reviewed Croatian AI summaries, official election history, county exploration and an initial accountability dossier. The dashboard uses validated Eurostat and DZS observations, historical charts, compatible comparisons and source metadata. Political facts retain their separately dated sources; each phase documents its current coverage. Starting with Phase 7, local, gitignored walkthroughs in `docs/phases/` explain the steps, decisions, failures and fixes.
 
 ## Local development
 
@@ -103,7 +103,7 @@ Phase 5 adds grounding/authentication tests and extends the isolated party tests
 
 Phase 6 adds `npm run elections:import`, an isolated `test:elections` suite, regional statistical definitions and desktop/mobile election/county scenarios. See [exact source coverage, commands, denominators, geography and map licensing](./docs/elections-regions.md). Current upcoming schedules, local elections and older cycles have not been imported.
 
-Phase 7 adds `npm run accountability:archive`, an isolated `test:accountability` suite, public/editorial browser flows and two COFOG series. The archive command creates initial snapshots and subsequently verifies pinned local files; it does not refresh live evidence. Restore `.data/snapshots/accountability` from backup on another machine. Set `PUBLIC_ORIGIN` to the exact public form origin (it falls back to `EDITORIAL_ORIGIN`); editorial decisions require individual reviewer credentials. See the [Phase 7 walkthrough, including source discrepancies and failed checks](./docs/phases/phase-07.md).
+Phase 7 adds `npm run accountability:archive`, an isolated `test:accountability` suite, public/editorial browser flows and two COFOG series. The archive command creates initial snapshots and subsequently verifies pinned local files; it does not refresh live evidence. Restore `.data/snapshots/accountability` from backup on another machine. Set `PUBLIC_ORIGIN` to the exact public form origin (it falls back to `EDITORIAL_ORIGIN`); editorial decisions require individual reviewer credentials. The local, gitignored walkthrough at `docs/phases/phase-07.md` records source discrepancies and failed checks.
 
 `test:ingestion` loads `.env`, applies all migrations in a randomly named isolated PostgreSQL schema, and removes only that schema afterward. It checks concurrent reruns, failed/empty imports, anomaly staging, manual publication, retained revisions and snapshot integrity without writing test data into the public schema. `npm test` runs the unit tests; it also runs the isolated database test if `DATABASE_URL` is already in the process environment.
 
@@ -146,3 +146,20 @@ National histories start in 2015, so a full-term baseline for the 2011 administr
 The dated parliamentary/leadership snapshot is in `src/lib/politics.ts`, separate from synthetic fixtures. Administration records are in `src/lib/governments.ts`, verified separately on 1 November 2026. These editorial facts retain their own verification dates. Registry identities and program revisions persist in PostgreSQL. Register updates use `npm run parties:import`, never page-load fetching. PDF storage uses `PROGRAM_DOCUMENT_DIR` (default `.data/programs`); back it up with PostgreSQL and statistical snapshots. See [party maintainer commands](./docs/party-directory.md) and [political sources](./docs/political-sources.md).
 
 Framework setup follows the official [Next.js installation](https://nextjs.org/docs/app/getting-started/installation), [shadcn/ui installation](https://ui.shadcn.com/docs/installation/next), and [Prisma 7 client generation](https://www.prisma.io/docs/orm/v7/prisma-schema/overview/generators) documentation. Prisma is pinned to the stable 7.x series rather than the 8.x release candidate.
+
+## Production hardening (Phase 8)
+
+See [production deployment, monitoring, backups, restore drills and migration procedures](./docs/production.md). Phase 8 adds non-root standalone Docker packaging, a separate bounded maintenance container, a TLS/rate-limit nginx example, Linux CI, health/import monitoring, read-only live source checks, provenance auditing, coordinated backup verification, document-processing checks and deferred chart rendering. The local walkthrough is `docs/phases/phase-08.md` (gitignored).
+
+```powershell
+npm run ops:status
+npm run ops:audit
+npm run sources:check
+# Requires PostgreSQL 17 pg_dump on PATH (or PGDUMP_PATH); pause all writers first.
+npm run ops:backup -- <new-backup-directory> --writers-paused
+npm run ops:backup -- <backup-directory> --verify
+```
+
+All configured live sources parsed in the local check; tourism still requires review. The archive audit retains one explicit failure for an older renewable-energy revision whose original hashing definition is missing. Recover and verify that evidence before full provenance signoff. New statistical snapshots retain their exact definition; manual statistical publication now verifies the archive hash. No historical archive or published value was rewritten.
+
+Local automated keyboard/accessibility-tree checks do not establish a manual screen-reader audit. Public hosting, external alerts, off-host encrypted backups and real-device/NVDA/VoiceOver checks remain operator release work; no public deployment or account was created. Keep indexing disabled until release review.

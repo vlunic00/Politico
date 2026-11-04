@@ -1,6 +1,6 @@
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { randomUUID } from "node:crypto";
-import { mkdir, mkdtemp, readFile, readdir, rm } from "node:fs/promises";
+import { mkdir, mkdtemp, readFile, readdir, rm, writeFile } from "node:fs/promises";
 import { join, resolve, sep } from "node:path";
 import { Pool } from "pg";
 import { PrismaPg } from "@prisma/adapter-pg";
@@ -60,6 +60,11 @@ describe.skipIf(!process.env.DATABASE_URL)("PostgreSQL ingestion, isolated schem
     const revised = await ingest(db, def, { load: async () => cubeSnapshot({ "0": 140, "1": 141, "2": 200, "3": 202 }), snapshotDirectory: directory });
     expect(revised.status).toBe("NEEDS_REVIEW");
     expect(await db.indicatorObservation.count({ where: { publishedAt: { not: null } } })).toBe(4);
+    const stagedFile = (await db.sourceRevision.findUniqueOrThrow({ where: { id: revised.revisionId } })).snapshotPath;
+    const stagedBytes = await readFile(stagedFile);
+    await writeFile(stagedFile, "{}");
+    await expect(publishReviewedRevision(db, def, revised.revisionId)).rejects.toThrow(/hash verification/);
+    await writeFile(stagedFile, stagedBytes);
     expect(await publishReviewedRevision(db, def, revised.revisionId)).toBe(4);
     expect(await db.indicatorObservation.count({ where: { revisionId: first.revisionId, publishedAt: { not: null } } })).toBe(4);
     const rolledBackSource = await ingest(db, def, { load, snapshotDirectory: directory });
@@ -67,7 +72,7 @@ describe.skipIf(!process.env.DATABASE_URL)("PostgreSQL ingestion, isolated schem
     expect(await db.ingestionRun.count({ where: { status: "SUCCEEDED", error: { contains: revised.revisionId } } })).toBe(1);
     expect(JSON.parse(await readFile((await db.sourceRevision.findUniqueOrThrow({ where: { id: revised.revisionId } })).snapshotPath, "utf8")).payload.value["0"]).toBe(140);
     const snapshotFile = (await db.sourceRevision.findUniqueOrThrow({ where: { id: first.revisionId } })).snapshotPath;
-    const { writeFile } = await import("node:fs/promises");
+    expect(JSON.parse(await readFile(snapshotFile, "utf8")).definition).toEqual(def);
     await writeFile(snapshotFile, "{}", "utf8");
     await expect(ingest(db, def, { load, snapshotDirectory: directory })).rejects.toThrow(/hash verification/);
   }, 20_000);

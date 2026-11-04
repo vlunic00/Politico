@@ -1,0 +1,37 @@
+services:
+  web:
+    build:
+      context: .
+      target: web
+    env_file: .env.production
+    environment:
+      PROGRAM_DOCUMENT_DIR: /data/programs
+      DATA_SNAPSHOT_DIR: /data/snapshots
+    ports:
+      - "127.0.0.1:3000:3000"
+    volumes:
+      - ${EVIDENCE_DIR:?Set EVIDENCE_DIR to the absolute durable evidence directory}:/data:ro
+    restart: unless-stopped
+    init: true
+    security_opt:
+      - no-new-privileges:true
+    cap_drop: [ALL]
+  maintenance:
+    profiles: [tools]
+    build:
+      context: .
+      target: maintenance
+    env_file: .env.production
+    environment:
+      PROGRAM_DOCUMENT_DIR: /data/programs
+      DATA_SNAPSHOT_DIR: /data/snapshots
+    volumes:
+      - ${EVIDENCE_DIR:?Set EVIDENCE_DIR to the absolute durable evidence directory}:/data
+      - ${BACKUP_DIR:?Set BACKUP_DIR to the absolute protected backup directory}:/backups
+    init: true
+    cpus: 1
+    mem_limit: 1g
+    pids_limit: 128
+    security_opt:
+      - no-new-privileges:true
+    cap_drop: [ALL]

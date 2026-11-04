@@ -7,6 +7,15 @@ import { validateProgramDocument } from "./programs";
 import { extractionPagesSchema } from "./summary-contract";
 
 const exec = promisify(execFile);
+export function pdfPageCount(info: string) {
+  const count = Number(info.match(/^Pages:\s+(\d+)\s*$/m)?.[1]);
+  if (!Number.isInteger(count) || count < 1 || count > 2000) throw new Error("Unsupported PDF page count.");
+  return count;
+}
+export function pdfProcessEnvironment(): NodeJS.ProcessEnv {
+  // Parsers need system paths, never database/editorial/model credentials.
+  return { NODE_ENV: process.env.NODE_ENV, ...Object.fromEntries(["PATH", "SystemRoot", "WINDIR", "TEMP", "TMP", "USERPROFILE", "APPDATA", "LOCALAPPDATA", "HOME"].flatMap((key) => process.env[key] ? [[key, process.env[key]!]] : [])) };
+}
 export const extractorVersion = "pdftotext-layout-utf8-v1";
 export function parseExtractedPages(text: string, pageCount: number) {
   if (!Number.isInteger(pageCount) || pageCount < 1 || pageCount > 2000) throw new Error("Unsupported PDF page count.");
@@ -26,9 +35,9 @@ export async function extractProgram(db: PrismaClient, versionId: string) {
   const bytes = await readFile(version.storedDocumentPath);
   validateProgramDocument(bytes);
   if (sha256(bytes) !== version.contentHash) throw new Error("Archived PDF failed its SHA-256 check.");
-  const options = { timeout: 30000, maxBuffer: 12_000_000, windowsHide: true };
+  const options = { timeout: 30000, maxBuffer: 12_000_000, windowsHide: true, env: pdfProcessEnvironment() };
   const info = await exec(process.env.PDFINFO_PATH || "pdfinfo", [version.storedDocumentPath], options);
-  const count = Number(info.stdout.match(/^Pages:\s+(\d+)/m)?.[1]);
+  const count = pdfPageCount(info.stdout);
   const output = await exec(process.env.PDFTOTEXT_PATH || "pdftotext", ["-layout", "-enc", "UTF-8", version.storedDocumentPath, "-"], options);
   const { pages, complete } = parseExtractedPages(output.stdout, count);
   const contentHash = sha256(JSON.stringify(pages));

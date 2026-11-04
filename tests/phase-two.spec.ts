@@ -37,6 +37,7 @@ test("comparison selections survive in the URL and DZS wages cannot acquire an E
   await expect(page.getByText("Nema usporedivih podataka za EU u posljednjem razdoblju.", { exact: true })).toBeVisible();
   await page.getByText("Tablični prikaz podataka", { exact: true }).click();
   const rows = page.getByRole("table").getByRole("row");
+  await expect(rows).not.toHaveCount(0);
   expect(await rows.count()).toBeGreaterThan(12);
   await expect(rows.last().getByRole("cell").nth(1)).toHaveText("Nije dostupno");
   await page.reload();

@@ -1,0 +1,654 @@
+{
+  "indicator": "nominal-net-wages",
+  "request": {
+    "url": "https://web.dzs.hr/PXWeb/api/v1/en/Zaposlenost%20i%20pla%C4%87e/Od%202025/T01.px",
+    "body": {
+      "query": [
+        {
+          "code": "DJELATNOST",
+          "selection": {
+            "filter": "item",
+            "values": [
+              "000"
+            ]
+          }
+        },
+        {
+          "code": "GODINA",
+          "selection": {
+            "filter": "item",
+            "values": [
+              "2025",
+              "2026"
+            ]
+          }
+        },
+        {
+          "code": "PERIOD",
+          "selection": {
+            "filter": "item",
+            "values": [
+              "1",
+              "2",
+              "3",
+              "4",
+              "5",
+              "6",
+              "7",
+              "8",
+              "9",
+              "10",
+              "11",
+              "12"
+            ]
+          }
+        },
+        {
+          "code": "PLAĆA",
+          "selection": {
+            "filter": "item",
+            "values": [
+              "2"
+            ]
+          }
+        }
+      ],
+      "response": {
+        "format": "json"
+      }
+    }
+  },
+  "retrievedAt": "2026-10-24T14:46:00.692Z",
+  "payload": {
+    "columns": [
+      {
+        "code": "DJELATNOST",
+        "text": "ACTIVITY",
+        "type": "d"
+      },
+      {
+        "code": "GODINA",
+        "text": "YEAR",
+        "type": "d"
+      },
+      {
+        "code": "PERIOD",
+        "text": "PERIOD",
+        "type": "d"
+      },
+      {
+        "code": "PLAĆA",
+        "text": "EARNING",
+        "type": "d"
+      },
+      {
+        "code": "Gross and net earnings",
+        "text": "Gross and net earnings",
+        "type": "c"
+      }
+    ],
+    "comments": [],
+    "data": [
+      {
+        "key": [
+          "000",
+          "2025",
+          "1",
+          "2"
+        ],
+        "values": [
+          "1392"
+        ]
+      },
+      {
+        "key": [
+          "000",
+          "2025",
+          "2",
+          "2"
+        ],
+        "values": [
+          "1416"
+        ]
+      },
+      {
+        "key": [
+          "000",
+          "2025",
+          "3",
+          "2"
+        ],
+        "values": [
+          "1448"
+        ]
+      },
+      {
+        "key": [
+          "000",
+          "2025",
+          "4",
+          "2"
+        ],
+        "values": [
+          "1439"
+        ]
+      },
+      {
+        "key": [
+          "000",
+          "2025",
+          "5",
+          "2"
+        ],
+        "values": [
+          "1451"
+        ]
+      },
+      {
+        "key": [
+          "000",
+          "2025",
+          "6",
+          "2"
+        ],
+        "values": [
+          "1444"
+        ]
+      },
+      {
+        "key": [
+          "000",
+          "2025",
+          "7",
+          "2"
+        ],
+        "values": [
+          "1437"
+        ]
+      },
+      {
+        "key": [
+          "000",
+          "2025",
+          "8",
+          "2"
+        ],
+        "values": [
+          "1446"
+        ]
+      },
+      {
+        "key": [
+          "000",
+          "2025",
+          "9",
+          "2"
+        ],
+        "values": [
+          "1456"
+        ]
+      },
+      {
+        "key": [
+          "000",
+          "2025",
+          "10",
+          "2"
+        ],
+        "values": [
+          "1470"
+        ]
+      },
+      {
+        "key": [
+          "000",
+          "2025",
+          "11",
+          "2"
+        ],
+        "values": [
+          "1498"
+        ]
+      },
+      {
+        "key": [
+          "000",
+          "2025",
+          "12",
+          "2"
+        ],
+        "values": [
+          "1494"
+        ]
+      },
+      {
+        "key": [
+          "000",
+          "2026",
+          "1",
+          "2"
+        ],
+        "values": [
+          "1511"
+        ]
+      },
+      {
+        "key": [
+          "000",
+          "2026",
+          "2",
+          "2"
+        ],
+        "values": [
+          "1527"
+        ]
+      },
+      {
+        "key": [
+          "000",
+          "2026",
+          "3",
+          "2"
+        ],
+        "values": [
+          "1555"
+        ]
+      },
+      {
+        "key": [
+          "000",
+          "2026",
+          "4",
+          "2"
+        ],
+        "values": [
+          "1552"
+        ]
+      },
+      {
+        "key": [
+          "000",
+          "2026",
+          "5",
+          "2"
+        ],
+        "values": [
+          "1552"
+        ]
+      },
+      {
+        "key": [
+          "000",
+          "2026",
+          "6",
+          "2"
+        ],
+        "values": [
+          "1555"
+        ]
+      },
+      {
+        "key": [
+          "000",
+          "2026",
+          "7",
+          "2"
+        ],
+        "values": [
+          "1540"
+        ]
+      },
+      {
+        "key": [
+          "000",
+          "2026",
+          "8",
+          "2"
+        ],
+        "values": [
+          "1543"
+        ]
+      },
+      {
+        "key": [
+          "000",
+          "2026",
+          "9",
+          "2"
+        ],
+        "values": [
+          "-"
+        ]
+      },
+      {
+        "key": [
+          "000",
+          "2026",
+          "10",
+          "2"
+        ],
+        "values": [
+          "-"
+        ]
+      },
+      {
+        "key": [
+          "000",
+          "2026",
+          "11",
+          "2"
+        ],
+        "values": [
+          "-"
+        ]
+      },
+      {
+        "key": [
+          "000",
+          "2026",
+          "12",
+          "2"
+        ],
+        "values": [
+          "-"
+        ]
+      }
+    ],
+    "metadata": [
+      {
+        "updated": "2026-03-11T07:00:00Z",
+        "label": "Gross and net earnings by ACTIVITY, YEAR, PERIOD and EARNING",
+        "source": "Croatian Bureau of Statistics"
+      }
+    ]
+  },
+  "metadata": {
+    "title": "1 AVERAGE MONTHLY GROSS AND NET EARNINGS PER PERSON IN PAID EMPLOYMENT IN LEGAL ENTITIES, ACCORDING TO NKD 2025 _ PROCESSING BASED ON JOPPD FORMS",
+    "variables": [
+      {
+        "code": "DJELATNOST",
+        "text": "ACTIVITY",
+        "values": [
+          "000",
+          "A",
+          "01",
+          "02",
+          "03",
+          "B",
+          "06",
+          "08",
+          "09",
+          "C",
+          "10",
+          "11",
+          "12",
+          "13",
+          "14",
+          "15",
+          "16",
+          "17",
+          "18",
+          "19",
+          "20",
+          "21",
+          "22",
+          "23",
+          "24",
+          "25",
+          "26",
+          "27",
+          "28",
+          "29",
+          "30",
+          "31",
+          "32",
+          "33",
+          "D",
+          "35",
+          "E",
+          "36",
+          "37",
+          "38",
+          "39",
+          "F",
+          "41",
+          "42",
+          "43",
+          "G",
+          "46",
+          "47",
+          "H",
+          "49",
+          "50",
+          "51",
+          "52",
+          "53",
+          "I",
+          "55",
+          "56",
+          "J",
+          "58",
+          "59",
+          "60",
+          "K",
+          "61",
+          "62",
+          "63",
+          "L",
+          "64",
+          "65",
+          "66",
+          "M",
+          "68",
+          "N",
+          "69",
+          "70",
+          "71",
+          "72",
+          "73",
+          "74",
+          "75",
+          "O",
+          "77",
+          "78",
+          "79",
+          "80",
+          "81",
+          "82",
+          "P",
+          "84",
+          "Q",
+          "85",
+          "R",
+          "86",
+          "87",
+          "88",
+          "S",
+          "90",
+          "91",
+          "92",
+          "93",
+          "T",
+          "94",
+          "95",
+          "96"
+        ],
+        "valueTexts": [
+          "TOTAL",
+          "AGRICULTURE, FORESTRY AND FISHING",
+          "Crop and animal production, hunting and related service activities",
+          "Forestry and logging",
+          "Fishing and aquaculture",
+          "MINING AND QUARRYING",
+          "Extraction of crude petroleum and natural gas",
+          "Other mining and quarrying",
+          "Mining support service activities",
+          "MANUFACTURING",
+          "Manufacture of food products",
+          "Manufacture of beverages",
+          "Manufacture of tobacco products",
+          "Manufacture of textiles",
+          "Manufacture of wearing apparel",
+          "Manufacture of leather and related products of other materials",
+          "Manufacture of wood and of products of wood and cork, except furniture; manufacture of articles of straw and plaiting materials",
+          "Manufacture of paper and paper products",
+          "Printing and reproduction of recorded media",
+          "Manufacture of coke and refined petroleum products",
+          "Manufacture of chemicals and chemical products",
+          "Manufacture of basic pharmaceutical products and pharmaceutical preparations",
+          "Manufacture of rubber and plastic products",
+          "Manufacture of other non-metallic mineral products",
+          "Manufacture of basic metals",
+          "Manufacture of fabricated metal products, except machinery and equipment",
+          "Manufacture of computer, electronic and optical products",
+          "Manufacture of electrical equipment",
+          "Manufacture of machinery and equipment, n.e.c.",
+          "Manufacture of motor vehicles, trailers and semi-trailers",
+          "Manufacture of other transport equipment",
+          "Manufacture of furniture",
+          "Other manufacturing",
+          "Repair, maintenance and installation of machinery and equipment",
+          "ELECTRICITY, GAS, STEAM AND AIR CONDITIONING SUPPLY",
+          "Electricity, gas, steam and air conditioning supply",
+          "WATER SUPPLY; SEWERAGE, WASTE MANAGEMENT AND REMEDIATION ACTIVITIES",
+          "Water collection, treatment and supply",
+          "Sewerage",
+          "Waste collection, recovery and disposal activities",
+          "Remediation activities and other waste management service activities",
+          "CONSTRUCTION",
+          "Construction of residential and non-residential buildings",
+          "Civil engineering",
+          "Specialised construction activities",
+          "WHOLESALE AND RETAIL TRADE",
+          "Wholesale trade",
+          "Retail trade",
+          "TRANSPORTATION AND STORAGE",
+          "Land transport and transport via pipelines",
+          "Water transport",
+          "Air transport",
+          "Warehousing, storage and support activities for transportation",
+          "Postal and courier activities",
+          "ACCOMMODATION AND FOOD SERVICE ACTIVITIES",
+          "Accommodation",
+          "Food and beverage service activities",
+          "PUBLISHING, BROADCASTING, AND CONTENT PRODUCTION AND DISTRIBUTION ACTIVITIES",
+          "Publishing activities",
+          "Motion picture, video and television programme production, sound recording and music publishing activities",
+          "Programming, broadcasting, news agency and other content distribution activities",
+          "TELECOMMUNICATION, COMPUTER PROGRAMMING, CONSULTING, COMPUTING INFRASTRUCTURE AND OTHER INFORMATION SERVICE ACTIVITIES",
+          "Telecommunication",
+          "Computer programming, consultancy and related activities",
+          "Computing infrastructure, data processing, hosting and other information service activities",
+          "FINANCIAL AND INSURANCE ACTIVITIES",
+          "Financial service activities, except insurance and pension funding",
+          "Insurance, reinsurance and pension funding, except compulsory social security",
+          "Activities auxiliary to financial services and insurance activities",
+          "REAL ESTATE ACTIVITIES",
+          "Real estate activities",
+          "PROFESSIONAL, SCIENTIFIC AND TECHNICAL ACTIVITIES",
+          "Legal and accounting activities",
+          "Activities of head offices and management consultancy",
+          "Architectural and engineering activities; technical testing and analysis",
+          "Scientific research and development",
+          "Activities of advertising, market research and public relations",
+          "Other professional, scientific and technical activities",
+          "Veterinary activities",
+          "ADMINISTRATIVE AND SUPPORT SERVICE ACTIVITIES",
+          "Rental and leasing activities",
+          "Employment activities",
+          "Travel agency, tour operator and other reservation service and related activities",
+          "Investigation and security activities",
+          "Services to buildings and landscape activities",
+          "Office administrative, office support and other business support activities",
+          "PUBLIC ADMINISTRATION AND DEFENCE; COMPULSORY SOCIAL SECURITY",
+          "Public administration and defence; compulsory social security",
+          "EDUCATION",
+          "Education",
+          "HUMAN HEALTH AND SOCIAL WORK ACTIVITIES",
+          "Human health activities",
+          "Residential care activities",
+          "Social work activities without accommodation",
+          "ARTS, SPORTS AND RECREATION",
+          "Arts creation and performing arts activities",
+          "Libraries, archives, museums and other cultural activities",
+          "Gambling and betting activities",
+          "Sports activities and amusement and recreation activities",
+          "OTHER SERVICE ACTIVITIES",
+          "Activities of membership organisations",
+          "Repair and maintenance of computers, personal and household goods, and motor vehicles and motorcycles",
+          "Personal service activities"
+        ]
+      },
+      {
+        "code": "GODINA",
+        "text": "YEAR",
+        "values": [
+          "2025",
+          "2026"
+        ],
+        "valueTexts": [
+          "2025",
+          "2026"
+        ]
+      },
+      {
+        "code": "PERIOD",
+        "text": "PERIOD",
+        "values": [
+          "0",
+          "1",
+          "2",
+          "3",
+          "4",
+          "5",
+          "6",
+          "7",
+          "8",
+          "9",
+          "10",
+          "11",
+          "12",
+          "13",
+          "14",
+          "15",
+          "16",
+          "17",
+          "18"
+        ],
+        "valueTexts": [
+          "I-XII",
+          "I",
+          "II",
+          "III",
+          "IV",
+          "V",
+          "VI",
+          "VII",
+          "VIII",
+          "IX",
+          "X",
+          "XI",
+          "XII",
+          "Q1",
+          "Q2",
+          "Q3",
+          "Q4",
+          "P1",
+          "P2"
+        ]
+      },
+      {
+        "code": "PLAĆA",
+        "text": "EARNING",
+        "values": [
+          "1",
+          "2"
+        ],
+        "valueTexts": [
+          "GROSS",
+          "NET"
+        ]
+      }
+    ]
+  }
+}

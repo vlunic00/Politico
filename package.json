@@ -30,7 +30,11 @@
     "test:parties": "node --env-file=.env node_modules/vitest/vitest.mjs run src/lib/parties/parties.integration.test.ts",
     "test:elections": "node --env-file=.env node_modules/vitest/vitest.mjs run src/lib/elections/elections.integration.test.ts",
     "test:accountability": "node --env-file=.env node_modules/vitest/vitest.mjs run src/lib/accountability/accountability.integration.test.ts",
-    "postinstall": "prisma generate"
+    "postinstall": "prisma generate",
+    "ops:status": "tsx scripts/operations.ts",
+    "ops:audit": "tsx scripts/operations.ts --audit",
+    "ops:backup": "tsx scripts/backup.ts",
+    "sources:check": "tsx scripts/check-sources.ts"
   },
   "engines": {
     "node": ">=22.12.0"

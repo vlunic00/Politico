@@ -65,6 +65,7 @@ test("all counties have map links and exact-year comparisons, profiles and sourc
   await expect(page.getByRole("heading", { name: "Grad Zagreb · povijest" })).toBeVisible();
   await page.reload();
   await expect(page.getByLabel("Županija za usporedbu 2")).toHaveValue("HR065");
+  await page.getByRole("figure", { name: "Grad Zagreb · BDP po stanovniku", exact: true }).locator("div.h-72").scrollIntoViewIfNeeded();
   await expect(page.locator(".recharts-wrapper svg").first()).toBeVisible();
   await page.getByLabel("Regionalni pokazatelj").selectOption("regional-migration-adjusted");
   await expect(page.getByLabel("Regionalni pokazatelj")).toHaveValue("regional-migration-adjusted");

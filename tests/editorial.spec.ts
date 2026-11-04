@@ -2,10 +2,17 @@ import { expect, test, request as requestFactory } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
 import { fixtureSummary } from "../src/lib/parties/summary-fixture";
 
+test("authenticated maintainers can inspect import monitoring", async ({ page }) => {
+  await page.goto("/admin/operations");
+  await expect(page.getByRole("heading", { name: "Nadzor uvoza" })).toBeVisible();
+  await expect(page.getByRole("main")).toContainText("SUCCEEDED");
+  expect((await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa", "wcag21aa", "wcag22aa"]).analyze()).violations).toEqual([]);
+});
+
 test("editorial routes fail closed for anonymous requests", async () => {
   const anonymous = await requestFactory.newContext({ baseURL: "http://127.0.0.1:3101", httpCredentials: { username: "anonymous", password: "invalid", send: "always" } });
   try {
-    for (const path of ["/admin/summaries", "/admin/summaries/unknown", "/admin/corrections"]) {
+    for (const path of ["/admin/summaries", "/admin/summaries/unknown", "/admin/corrections", "/admin/operations"]) {
       const response = await anonymous.get(path);
       expect(response.status()).toBe(401); expect(response.headers()["www-authenticate"]).toContain("Basic");
       expect(await response.text()).not.toContain("Synthetic");

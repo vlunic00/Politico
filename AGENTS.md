@@ -10,4 +10,4 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 
 ## Phase walkthroughs
 
-Starting with Phase 7, maintain a Markdown walkthrough for each implemented phase at `docs/phases/phase-XX.md`. Explain the steps, technical decisions and reasons in plain English for a learner. Give extra detail to actual bugs, failed tests, root causes and fixes. Record verification results and coverage limits honestly; do not reconstruct unsupported histories of earlier phases.
+Starting with Phase 7, maintain a local Markdown walkthrough for each implemented phase at `docs/phases/phase-XX.md`. Keep `docs/phases/` in `.gitignore`; do not stage or commit walkthroughs. Explain the steps, technical decisions and reasons in plain English for a learner. Give extra detail to actual bugs, failed tests, root causes and fixes. Record verification results and coverage limits honestly; do not reconstruct unsupported histories of earlier phases.

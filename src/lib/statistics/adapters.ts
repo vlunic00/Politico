@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { observationInputSchema, type ObservationInput } from "../contracts";
 import { datasetUrl, type Frequency, type SeriesDefinition } from "./definitions";
+import { boundedResponse } from "../parties/llm";
 
 export type Snapshot = {
   indicator: string;
@@ -140,7 +141,7 @@ export function parseDzs(def: SeriesDefinition, snapshot: Snapshot): ParsedSerie
   const query = dzsQuery(def, snapshot.metadata);
   const data = pxDataSchema.parse(snapshot.payload);
   const keys = data.columns.filter((c) => c.type === "d").map((c) => c.code);
-  if (keys.length !== query.query.length || keys.some((code) => !query.query.some((q) => q.code === code)))
+  if (keys.length !== query.query.length || new Set(keys).size !== keys.length || keys.some((code) => !query.query.some((q) => q.code === code)))
     throw new Error("DZS response columns changed.");
   const observations: ObservationInput[] = [];
   for (const row of data.data) {
@@ -158,11 +159,12 @@ export function parseDzs(def: SeriesDefinition, snapshot: Snapshot): ParsedSerie
 
 async function json(url: string, body?: unknown) {
   const response = await fetch(url, {
+    redirect: "error",
     signal: AbortSignal.timeout(60_000),
     ...(body ? { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) } : {}),
   });
-  if (!response.ok) throw new Error(`Source HTTP ${response.status}: ${url}`);
-  return response.json() as Promise<unknown>;
+  if (!response.ok) { await response.body?.cancel(); throw new Error(`Source HTTP ${response.status}: ${url}`); }
+  return JSON.parse((await boundedResponse(response, 20_000_000)).toString("utf8")) as unknown;
 }
 
 export async function fetchSnapshot(def: SeriesDefinition): Promise<Snapshot> {

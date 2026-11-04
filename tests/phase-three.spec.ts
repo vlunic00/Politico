@@ -49,6 +49,7 @@ test("published government comparisons show actual periods, dated transitions an
   await expect(current.getByRole("row", { name: /obuhvaća početak/ })).toContainText("2024-Q2");
   await expect(previous.getByRole("row", { name: /Zadnje završeno/ })).toContainText("2024-Q1");
   await expect(page.getByRole("list", { name: "Prijelazi administracija" }).getByRole("listitem")).toHaveCount(4);
+  await page.getByRole("figure").scrollIntoViewIfNeeded();
   await expect(page.locator(".recharts-reference-line-line")).toHaveCount(4);
   await page.screenshot({ path: `test-results/government-comparison-${testInfo.project.name}.png`, fullPage: true });
   expect((await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa", "wcag21aa", "wcag22aa"]).analyze()).violations).toEqual([]);

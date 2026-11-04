@@ -930,7 +930,7 @@ Avoid tracking users' individual political preferences. Do not store party-compa
 
 ## 21. Implementation milestones
 
-**Status — 4 November 2026:** Phases 1–7 have their core implementation with explicitly limited initial coverage. Phase 7 adds 34 regular-financing recipients, scoped parliamentary activity, one government-program commitment with dated evidence, correction workflows and two COFOG expenditure series. Donations, campaign expenses, individual votes and a wider commitment backfill remain coverage work. See the [Phase 7 learning walkthrough, decisions, failed checks and fixes](./docs/phases/phase-07.md). Phase 6 covers five official election datasets (103 result areas), 21 county profiles and two regional indicators; older/local elections and future schedules remain coverage work. See [election and regional contracts](./docs/elections-regions.md), [government history rules](./docs/government-history.md), [party directory contracts](./docs/party-directory.md) and [summary workflow and setup](./docs/program-summaries.md). Real AI summary publication still requires model credentials, individual accounts and human review. Phase 8 (production hardening) is next. Tourism remains staged for source review; no missing data are invented.
+**Status — 4 November 2026:** Phases 1–7 have their core implementation with explicitly limited initial coverage. Phase 7 adds 34 regular-financing recipients, scoped parliamentary activity, one government-program commitment with dated evidence, correction workflows and two COFOG expenditure series. Donations, campaign expenses, individual votes and a wider commitment backfill remain coverage work. The local, gitignored walkthrough at `docs/phases/phase-07.md` records decisions, failed checks and fixes. Phase 6 covers five official election datasets (103 result areas), 21 county profiles and two regional indicators; older/local elections and future schedules remain coverage work. See [election and regional contracts](./docs/elections-regions.md), [government history rules](./docs/government-history.md), [party directory contracts](./docs/party-directory.md) and [summary workflow and setup](./docs/program-summaries.md). Real AI summary publication still requires model credentials, individual accounts and human review. Phase 8 has local production-hardening implementation, deployment configuration and an operations runbook; public launch remains gated on the documented provenance finding, manual accessibility checks and hosting setup. See [production operations](./docs/production.md). Tourism remains staged for source review; no missing data are invented.
 
 ### Phase 1 — Foundation and UI
 
@@ -1018,7 +1018,7 @@ Use clearly labeled development fixtures where live data are not yet connected. 
 
 **Deliverable:** A richer public accountability platform without editorialized scoring.
 
-**Initial implementation:** [Phase 7 workflow and learning notes](./docs/phases/phase-07.md), including exact coverage, operational commands, privacy boundaries, source discrepancies, failed tests and the mobile-overflow fix. Each implemented phase now gets a walkthrough under `docs/phases/`; earlier development histories are not reconstructed.
+**Initial implementation:** Local workflow and learning notes at `docs/phases/phase-07.md` (gitignored), including exact coverage, operational commands, privacy boundaries, source discrepancies, failed tests and the mobile-overflow fix. Each implemented phase now gets a local, gitignored walkthrough under `docs/phases/`; earlier development histories are not reconstructed.
 
 ### Phase 8 — Production hardening
 
@@ -1031,6 +1031,8 @@ Use clearly labeled development fixtures where live data are not yet connected. 
 - Configure production deployment.
 
 **Deliverable:** A secure, maintainable, deployable application.
+
+**Local implementation:** Standalone web and separate maintenance images, security headers, source-drift replay/live checks, provenance audit, archive-checked publication, bounded PDF processing, keyboard/accessibility-tree checks, health/import monitoring, verified coordinated backups and restore procedure, Linux CI and deferred chart rendering. See [production operations and release limits](./docs/production.md) and the local, gitignored `docs/phases/phase-08.md`. One older renewable-energy archive remains unverifiable against the current hashing definition. Public hosting, external alerts/off-host backups and manual screen-reader/device signoff remain release work.
 
 ---
 

@@ -1,18 +1,12 @@
 "use client";
 
-import {
-  CartesianGrid,
-  Legend,
-  Line,
-  LineChart,
-  ReferenceLine,
-  ResponsiveContainer,
-  Tooltip,
-  XAxis,
-  YAxis,
-} from "recharts";
+import dynamic from "next/dynamic";
+import { useEffect, useRef, useState } from "react";
+
 import { EmptyState } from "./empty-state";
 import { formatDate, formatNumber } from "@/lib/statistics/series";
+
+const MetricPlot = dynamic(() => import("./metric-plot"));
 
 export type ChartPoint = {
   period: string;
@@ -37,6 +31,20 @@ export function MetricLineChart({
   transitions?: { date: string; label: string }[];
   labels?: [string, string];
 }) {
+  const plot = useRef<HTMLDivElement>(null);
+  const [visible, setVisible] = useState(false);
+  useEffect(() => {
+    if (!plot.current) return;
+    if (!("IntersectionObserver" in window)) {
+      const frame = requestAnimationFrame(() => setVisible(true));
+      return () => cancelAnimationFrame(frame);
+    }
+    const observer = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting) { setVisible(true); observer.disconnect(); }
+    }, { rootMargin: "300px" });
+    observer.observe(plot.current);
+    return () => observer.disconnect();
+  }, [points.length]);
   if (!points.length)
     return (
       <div className="flex min-h-72 items-center justify-center rounded-xl bg-[linear-gradient(#e6e9ec55_1px,transparent_1px)] bg-size-[100%_48px]">
@@ -57,71 +65,8 @@ export function MetricLineChart({
           EU-a.
         </p>
       )}
-      <div className="h-72 w-full min-w-0">
-        <ResponsiveContainer
-          width="100%"
-          height="100%"
-          initialDimension={{ width: 600, height: 288 }}
-        >
-          <LineChart
-            data={data}
-            aria-label={title}
-            margin={{ top: 8, right: 10, bottom: 0, left: 0 }}
-          >
-            <CartesianGrid stroke="#e6e9ec" vertical={false} />
-            <XAxis
-              dataKey={dated ? "timestamp" : "period"}
-              type={dated ? "number" : "category"}
-              scale={dated ? "time" : "auto"}
-              domain={dated ? ["dataMin", "dataMax"] : undefined}
-              tickFormatter={dated ? (value) => String(new Date(value).getUTCFullYear()) : undefined}
-              ticks={dated ? data.filter((point) => point.periodStart?.endsWith("-01-01")).map((point) => point.timestamp!) : undefined}
-              tickLine={false}
-              axisLine={false}
-              tick={{ fontSize: 11, fill: "#626b77" }}
-              dy={8}
-            />
-            <YAxis
-              tickLine={false}
-              axisLine={false}
-              tick={{ fontSize: 10, fill: "#626b77" }}
-              width={60}
-            />
-            <Tooltip
-              labelFormatter={dated ? (value) => data.find((point) => point.timestamp === Number(value))?.period ?? "" : undefined}
-              formatter={(value, name) => [
-                `${new Intl.NumberFormat("hr-HR", { maximumFractionDigits: 2 }).format(Number(value))} ${unit}`,
-                name,
-              ]}
-              contentStyle={{
-                borderRadius: 12,
-                borderColor: "#e6e9ec",
-                fontSize: 12,
-              }}
-            />
-            <Legend wrapperStyle={{ fontSize: 11, paddingTop: 20 }} />
-            {visibleTransitions.map((transition) => <ReferenceLine key={transition.date} x={Date.parse(transition.date)} stroke="#8c949c" strokeDasharray="4 4" />)}
-            <Line
-              name={labels[0]}
-              dataKey="croatia"
-              stroke="#263e49"
-              strokeWidth={2.5}
-              dot={false}
-              activeDot={{ r: 4 }}
-              connectNulls={false}
-              isAnimationActive={false}
-            />
-            <Line
-              name={labels[1]}
-              dataKey="eu"
-              stroke="#7d97aa"
-              strokeWidth={2}
-              dot={false}
-              connectNulls={false}
-              isAnimationActive={false}
-            />
-          </LineChart>
-        </ResponsiveContainer>
+      <div ref={plot} className="h-72 w-full min-w-0">
+        {visible && <MetricPlot data={data} title={title} unit={unit} dated={dated} visibleTransitions={visibleTransitions} labels={labels} />}
       </div>
       <figcaption className="mt-4 text-xs text-muted-foreground">
         {title} · Jedinica: {unit}

@@ -9,7 +9,7 @@ import { fetchSnapshot, parseSnapshot, type Snapshot } from "./adapters";
 
 type Comparable = Pick<ObservationInput, "geographyId" | "periodStart" | "periodEnd" | "value" | "unit" | "frequency" | "methodologyVersion">;
 const key = (point: Comparable) => `${point.geographyId}:${point.periodStart}:${point.periodEnd}`;
-const contentHash = (def: SeriesDefinition, snapshot: Snapshot) => createHash("sha256").update(JSON.stringify({ definition: def, request: snapshot.request, metadata: snapshot.metadata, payload: snapshot.payload })).digest("hex");
+export const snapshotContentHash = (def: SeriesDefinition, snapshot: Snapshot) => createHash("sha256").update(JSON.stringify({ definition: def, request: snapshot.request, metadata: snapshot.metadata, payload: snapshot.payload })).digest("hex");
 
 export function reviewReasons(def: SeriesDefinition, incoming: Comparable[], previous: Comparable[]) {
   const reasons: string[] = [];
@@ -79,15 +79,15 @@ export async function ingest(
     const boundedShare = ["PC", "PC_ACT", "PC_POP"].includes(def.dimensions.unit) || def.slug === "income-inequality";
     if (parsed.observations.some((p) => (boundedShare && (p.value < 0 || p.value > 100)) || (def.change === "percent" && def.dimensions.indic_de !== "CNMIGRAT" && p.value < 0)))
       throw new Error("Value outside the indicator's valid range.");
-    const hash = contentHash(def, snapshot);
+    const hash = snapshotContentHash(def, snapshot);
     const directory = options.snapshotDirectory ?? process.env.DATA_SNAPSHOT_DIR ?? ".data/snapshots";
     await mkdir(directory, { recursive: true });
     const snapshotPath = join(directory, `${def.slug}-${hash}.json`);
     return await db.$transaction(async (tx) => {
       await tx.$executeRaw`SELECT pg_advisory_xact_lock(hashtext(${datasetId}))`;
-      await writeFile(snapshotPath, JSON.stringify(snapshot, null, 2), { flag: "wx" }).catch(async (error: NodeJS.ErrnoException) => {
+      await writeFile(snapshotPath, JSON.stringify({ ...snapshot, definition: def }, null, 2), { flag: "wx" }).catch(async (error: NodeJS.ErrnoException) => {
         if (error.code !== "EEXIST") throw error;
-        if (contentHash(def, JSON.parse(await readFile(snapshotPath, "utf8"))) !== hash) throw new Error("Existing snapshot failed hash verification.");
+        if (snapshotContentHash(def, JSON.parse(await readFile(snapshotPath, "utf8"))) !== hash) throw new Error("Existing snapshot failed hash verification.");
       });
       const latest = await tx.indicatorObservation.findFirst({ where: { indicatorId: def.slug, publishedAt: { not: null } }, orderBy: { publishedAt: "desc" }, select: { revisionId: true, revision: true } });
       const existing = await tx.sourceRevision.findUnique({ where: { sourceDatasetId_contentHash: { sourceDatasetId: datasetId, contentHash: hash } }, include: { observations: { select: { publishedAt: true } } } });
@@ -132,6 +132,8 @@ export async function publishReviewedRevision(db: PrismaClient, def: SeriesDefin
     await tx.$executeRaw`SELECT pg_advisory_xact_lock(hashtext(${`${def.source}:${def.slug}`}))`;
     const revision = await tx.sourceRevision.findUniqueOrThrow({ where: { id: revisionId }, include: { observations: true } });
     if (revision.sourceDatasetId !== `${def.source}:${def.slug}` || !revision.observations.length || revision.observations.some((p) => p.publishedAt)) throw new Error("Revision is not a staged series for this definition.");
+    const snapshot = JSON.parse(await readFile(revision.snapshotPath, "utf8"));
+    if (snapshotContentHash(def, snapshot) !== revision.contentHash) throw new Error("Staged snapshot failed hash verification.");
     if ((def.geographies ?? ["HR"]).some((geography) => revision.observations.filter((p) => p.geographyId === geography).length < def.minimumHistory) || revision.observations.some((p) => !(def.geographies ?? ["HR", "EU27_2020"]).includes(p.geographyId) || p.unit !== def.unit || p.frequency !== def.frequency || p.methodologyVersion !== `${def.dataset}:${JSON.stringify(def.dimensions)}`))
       throw new Error("Staged data do not meet the definition or minimum history requirements.");
     const newer = await tx.indicatorObservation.findFirst({ where: { indicatorId: def.slug, publishedAt: { not: null }, retrievedAt: { gt: revision.retrievedAt } } });
