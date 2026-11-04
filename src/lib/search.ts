@@ -2,6 +2,7 @@ import { indicators, sources, topics } from "./catalogue";
 import { parliamentaryParties, type ParliamentaryParty } from "./politics";
 import { counties } from "./regions/catalogue";
 import { elections } from "./elections/catalogue";
+import { accountabilitySections } from "./accountability/catalogue";
 
 export function normalizeSearch(value: string) {
   return value
@@ -16,6 +17,8 @@ export function searchCatalogue(query: string, parties: (Pick<ParliamentaryParty
   const normalized = normalizeSearch(query);
   if (!normalized) return [];
   return [
+    ...accountabilitySections.map((section) => ({ title: section.title, description: section.description, href: `/accountability#${section.id}`, type: "Odgovornost" })),
+    { title: "Javni ispravci", description: "Prijavite pogrešku i pregledajte dnevnik prihvaćenih ispravaka", href: "/corrections", type: "Ispravci" },
     ...counties.map((county) => ({ title: county.name, description: "Županijski profil · regionalni pokazatelji i nacionalna referenca", href: `/regions/${county.slug}`, type: "Županija" })),
     ...elections.map((election) => ({ title: election.title, description: `${election.date} · ${election.round}. krug · službeni izborni izvori`, href: `/elections/${election.id}`, type: "Izbori" })),
     ...parties.map((party) => ({

@@ -1,0 +1,44 @@
+[
+  {
+    "sourceId": "sabor-finance-2024",
+    "url": "https://www.sabor.hr/sites/default/files/Izvje%C5%A1%C4%87e%20o%20raspore%C4%91enim%20i%20ispla%C4%87enim%20sredstvima%2024._0.pdf",
+    "sha256": "0cb1529e5b37a6cb84321ab07c006dc083d69a264dacbbb3a2e1566c1fc93a59",
+    "retrievedAt": "2026-11-04T13:58:35.472Z",
+    "file": "0cb1529e5b37a6cb84321ab07c006dc083d69a264dacbbb3a2e1566c1fc93a59.pdf"
+  },
+  {
+    "sourceId": "sabor-activity-2026",
+    "url": "https://www.sabor.hr/hr/press/javnost-rada/pregled-rada-hrvatskoga-sabora-u-11-sazivu-od-15-sijecnja-do-15-srpnja-2026",
+    "sha256": "cddc682623f4e2ad6100163bbba35e3d4e8ff7d14d35d21fb8b00a93e7d8e36a",
+    "retrievedAt": "2026-11-04T13:58:35.553Z",
+    "file": "cddc682623f4e2ad6100163bbba35e3d4e8ff7d14d35d21fb8b00a93e7d8e36a.html"
+  },
+  {
+    "sourceId": "government-confidence-2024",
+    "url": "https://www.sabor.hr/hr/sjednice-sabora/predstavljanje-vlade-republike-hrvatske-i-glasovanje-o-povjerenju-vladi-republike-8",
+    "sha256": "acaa214c02d7b13b16984b341441ea766d0dd3e47c281871f76c3fd96597bc29",
+    "retrievedAt": "2026-11-04T13:58:35.633Z",
+    "file": "acaa214c02d7b13b16984b341441ea766d0dd3e47c281871f76c3fd96597bc29.html"
+  },
+  {
+    "sourceId": "government-program-2024",
+    "url": "https://vlada.gov.hr/UserDocsImages/ZPPI/Dokumenti%20Vlada/2024/Program_16_Vlade_RH.pdf?vel=989567",
+    "sha256": "c53ee858c51d041af8c77592a05dcef0dcbfb00d9c71d51bde63338d82587bf0",
+    "retrievedAt": "2026-11-04T13:58:35.829Z",
+    "file": "c53ee858c51d041af8c77592a05dcef0dcbfb00d9c71d51bde63338d82587bf0.pdf"
+  },
+  {
+    "sourceId": "minimum-wage-2026",
+    "url": "https://narodne-novine.nn.hr/clanci/sluzbeni/2025_10_132_1931.html",
+    "sha256": "93f8f51fe1b3f2736991deaeb928b6720983a42fe3e703e774709330c047f1f4",
+    "retrievedAt": "2026-11-04T13:58:42.351Z",
+    "file": "93f8f51fe1b3f2736991deaeb928b6720983a42fe3e703e774709330c047f1f4.html"
+  },
+  {
+    "sourceId": "minimum-wage-2027-announcement",
+    "url": "https://mrosp.gov.hr/vijesti/donesena-uredba-o-visini-minimalne-place-za-2027-godinu/14162",
+    "sha256": "e7470f2b20ae67349e82ddff3573fccff44eb035e37d3cf0a885ec2bd02048d4",
+    "retrievedAt": "2026-11-04T13:58:42.494Z",
+    "file": "e7470f2b20ae67349e82ddff3573fccff44eb035e37d3cf0a885ec2bd02048d4.html"
+  }
+]

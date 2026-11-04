@@ -1,8 +1,8 @@
 # Statistical coverage
 
-Generated 2026-11-03T19:54:06.776Z by `npm run data:coverage`.
+Generated 2026-11-04T13:59:22.530Z by `npm run data:coverage`.
 
-33 active indicators; 13 awaiting verification; 2825 published observation records including retained revisions. UI reads only the newest published revision for each series. All 16 topic categories remain available.
+35 active indicators; 12 awaiting verification; 2865 published observation records including retained revisions. UI reads only the newest published revision for each series. All 16 topic categories remain available.
 
 | Indicator | Coverage | Source dataset | Latest reference start | Latest import |
 | --- | --- | --- | --- | --- |
@@ -31,13 +31,14 @@ Generated 2026-11-03T19:54:06.776Z by `npm run data:coverage`.
 | Court disposition time | AWAITING_VERIFICATION | Not connected | — | Not imported |
 | Electoral turnout | AWAITING_VERIFICATION | Not connected | — | Not imported |
 | Road fatalities | AWAITING_VERIFICATION | Not connected | — | Not imported |
-| Defence expenditure | AWAITING_VERIFICATION | Not connected | — | Not imported |
+| Defence expenditure | ACTIVE | eurostat: gov_10a_exp | 2024-01-01 | SUCCEEDED |
 | Foreign direct investment | AWAITING_VERIFICATION | Not connected | — | Not imported |
 | Gross external debt | AWAITING_VERIFICATION | Not connected | — | Not imported |
 | Tourist nights | AWAITING_VERIFICATION | eurostat: tour_occ_nim | — | NEEDS_REVIEW |
 | Industrial production | ACTIVE | eurostat: sts_inpr_m | 2026-08-01 | SUCCEEDED |
 | County GDP per capita | ACTIVE | eurostat: nama_10r_3gdp | 2024-01-01 | SUCCEEDED |
 | County net migration | AWAITING_VERIFICATION | Not connected | — | Not imported |
+| Government education expenditure | ACTIVE | eurostat: gov_10a_exp | 2024-01-01 | SUCCEEDED |
 | County net migration plus statistical adjustment | ACTIVE | eurostat: demo_r_gind3 | 2025-01-01 | SUCCEEDED |
 | Youth unemployment | ACTIVE | eurostat: une_rt_m | 2026-06-01 | SUCCEEDED |
 | Employment rate (20–64) | ACTIVE | eurostat: lfsi_emp_a | 2025-01-01 | SUCCEEDED |

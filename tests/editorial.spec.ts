@@ -5,13 +5,54 @@ import { fixtureSummary } from "../src/lib/parties/summary-fixture";
 test("editorial routes fail closed for anonymous requests", async () => {
   const anonymous = await requestFactory.newContext({ baseURL: "http://127.0.0.1:3101", httpCredentials: { username: "anonymous", password: "invalid", send: "always" } });
   try {
-    for (const path of ["/admin/summaries", "/admin/summaries/unknown"]) {
+    for (const path of ["/admin/summaries", "/admin/summaries/unknown", "/admin/corrections"]) {
       const response = await anonymous.get(path);
       expect(response.status()).toBe(401); expect(response.headers()["www-authenticate"]).toContain("Basic");
       expect(await response.text()).not.toContain("Synthetic");
     }
     expect((await anonymous.post("/admin/summaries/unknown/review")).status()).toBe(401);
+    expect((await anonymous.post("/admin/corrections/unknown/review")).status()).toBe(401);
   } finally { await anonymous.dispose(); }
+});
+
+test("public corrections stay private until a reviewer records an applied correction with public evidence", async ({ page, browser, request }, testInfo) => {
+  const claim = `Private synthetic ${testInfo.project.name} claim: displayed amount differs.`;
+  await page.goto("/corrections?page=/accountability%23financing");
+  await page.getByLabel("Sporna tvrdnja").fill(claim);
+  await page.getByLabel("Predloženi ispravak").fill("Private synthetic proposal: use the verified official amount.");
+  await page.getByLabel("Poveznica na dokaz").fill("https://www.sabor.hr/synthetic");
+  await page.getByRole("button", { name: "Pošalji prijavu" }).click();
+  await expect(page.getByRole("status")).toContainText("Prijava je spremljena");
+  await expect(page.getByRole("main")).not.toContainText(claim);
+  const validForm = { pagePath: "/accountability", claim, proposed: "Synthetic corrected amount with official evidence.", evidenceUrl: "https://www.sabor.hr/synthetic" };
+  expect((await request.post("/corrections/submit", { form: validForm, headers: { origin: "https://evil.example" } })).status()).toBe(403);
+  expect((await request.post("/corrections/submit", { form: validForm })).status()).toBe(403);
+  expect((await request.post("/corrections/submit", { data: "x".repeat(24001), headers: { origin: "http://127.0.0.1:3101", "content-type": "application/x-www-form-urlencoded" } })).status()).toBe(413);
+  await page.goto("/admin/corrections");
+  const entry = page.getByRole("article").filter({ hasText: claim });
+  const action = await entry.locator("form").getAttribute("action");
+  const editor = await browser.newContext({ baseURL: "http://127.0.0.1:3101", httpCredentials: { username: "test-editor", password: "isolated-browser-fixture-token-not-for-real-use-12345", send: "always" } });
+  try {
+    expect((await editor.request.post(action!, { form: { action: "ACCEPTED" }, headers: { origin: "http://127.0.0.1:3101" } })).status()).toBe(403);
+  } finally { await editor.close(); }
+  await entry.getByLabel("Privatna bilješka").fill("Private synthetic review after applying the fixture correction.");
+  const summary = `Synthetic ${testInfo.project.name}: corrected the fixture amount using the official record.`;
+  await entry.getByLabel("Javno objašnjenje promjene").fill(summary);
+  await entry.getByLabel("Provjereni izvor", { exact: true }).fill("https://www.sabor.hr/synthetic");
+  await entry.getByRole("button", { name: "Prihvati i objavi objašnjenje" }).click();
+  await expect(page.getByRole("main").getByRole("alert")).toContainText("Odluka nije spremljena");
+  await entry.getByLabel("Privatna bilješka").fill("Private synthetic review after applying the fixture correction.");
+  await entry.getByLabel("Javno objašnjenje promjene").fill(summary);
+  await entry.getByLabel("Provjereni izvor", { exact: true }).fill("https://www.sabor.hr/synthetic");
+  await entry.getByLabel("Provjerio/la sam izvor i već primijenio/la").check();
+  expect((await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa", "wcag21aa", "wcag22aa"]).analyze()).violations).toEqual([]);
+  await entry.getByRole("button", { name: "Prihvati i objavi objašnjenje" }).click();
+  await expect(page.getByRole("status")).toContainText("Odluka je spremljena");
+  await page.goto("/corrections");
+  await expect(page.getByRole("main")).toContainText(summary);
+  await expect(page.getByRole("main")).not.toContainText(claim);
+  await expect(page.getByRole("main")).not.toContainText("Private synthetic review");
+  await expect(page.getByRole("main")).not.toContainText("fixture-reviewer");
 });
 
 test("a human reviewer publishes a Croatian draft after evidence checks; editor, CSRF and stale edits cannot bypass review", async ({ page, browser, request }, testInfo) => {

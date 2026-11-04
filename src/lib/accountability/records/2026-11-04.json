@@ -1,0 +1,123 @@
+{
+  "version": 1,
+  "verifiedAt": "2026-11-04",
+  "sources": [
+    {
+      "id": "sabor-finance-2024",
+      "title": "Sabor · raspoređena i isplaćena sredstva za 2024.",
+      "url": "https://www.sabor.hr/sites/default/files/Izvje%C5%A1%C4%87e%20o%20raspore%C4%91enim%20i%20ispla%C4%87enim%20sredstvima%2024._0.pdf",
+      "publicationDate": null,
+      "note": "Skenirani izvještaj, ručno prepisane obje stranice. Na prvoj stranici otisnut je 18. veljače 2024., dok izvještaj obuhvaća 2024. i nosi oznake predmeta za 2025. Datum objave nije pouzdano utvrđen; ne ispravljamo ga pretpostavkom."
+    },
+    {
+      "id": "sabor-activity-2026",
+      "title": "Sabor · pregled rada od 15. siječnja do 15. srpnja 2026.",
+      "url": "https://www.sabor.hr/hr/press/javnost-rada/pregled-rada-hrvatskoga-sabora-u-11-sazivu-od-15-sijecnja-do-15-srpnja-2026",
+      "publicationDate": "2026-07-22",
+      "note": "Koristi se samo polugodišnji obuhvat, ne kumulativni dio za cijeli saziv. Broj govora i pitanja nije mjera kvalitete rada."
+    },
+    {
+      "id": "government-confidence-2024",
+      "title": "Sabor · glasovanje o povjerenju 16. Vladi",
+      "url": "https://www.sabor.hr/hr/sjednice-sabora/predstavljanje-vlade-republike-hrvatske-i-glasovanje-o-povjerenju-vladi-republike-8",
+      "publicationDate": null,
+      "note": "Službeni zapis točke dnevnog reda. Datum događaja nije zamjena za nepoznat datum objave stranice."
+    },
+    {
+      "id": "government-program-2024",
+      "title": "Program 16. Vlade Republike Hrvatske 2024.–2028.",
+      "url": "https://vlada.gov.hr/UserDocsImages/ZPPI/Dokumenti%20Vlada/2024/Program_16_Vlade_RH.pdf?vel=989567",
+      "publicationDate": null,
+      "note": "Izvorni PDF; 56 PDF stranica. Citirani odlomak je na PDF stranici 9 (otisnuta stranica 7). Program je vezan uz 16. Vladu, a ne pripisan samo jednoj stranci. Datum izvornog objavljivanja PDF-a nije utvrđen."
+    },
+    {
+      "id": "minimum-wage-2026",
+      "title": "Narodne novine · NN 132/2025-1931",
+      "url": "https://narodne-novine.nn.hr/clanci/sluzbeni/2025_10_132_1931.html",
+      "publicationDate": "2025-10-24",
+      "note": "Uredba određuje minimalnu bruto plaću od 1.050 EUR za 2026. To nije dokaz da je dosegnut programski cilj za 2028."
+    },
+    {
+      "id": "minimum-wage-2027-announcement",
+      "title": "Ministarstvo rada · donesena uredba za 2027.",
+      "url": "https://mrosp.gov.hr/vijesti/donesena-uredba-o-visini-minimalne-place-za-2027-godinu/14162",
+      "publicationDate": "2026-10-29",
+      "note": "Ministarstvo izvještava o donošenju uredbe s iznosom od 1.130 EUR za 2027. Najava buduće primjene nije trenutačno isplaćena plaća."
+    }
+  ],
+  "financing": {
+    "sourceId": "sabor-finance-2024",
+    "periodStart": "2024-01-01", "periodEnd": "2024-12-31",
+    "currency": "EUR", "scope": "national-budget-regular-funding",
+    "allocatedCents": 974091900, "paidCents": 974091906,
+    "reconciliation": { "allocatedCents": -1, "paidCents": 0, "note": "Zbroj prepisanih raspoređenih iznosa je 9.740.919,01 EUR, a otisnuti ukupni iznos je 9.740.919,00 EUR. Razlika od -0,01 EUR zadržana je kao neslaganje izvornika, bez izmjene redaka. Isplaćeni iznosi u cijelosti se slažu s otisnutim ukupnim iznosom." },
+    "rows": [
+      { "name": "Armin Hodžić", "kind": "independent", "allocatedCents": 3909142, "paidCents": 3909143, "page": 1 },
+      { "name": "Blok za Hrvatsku", "kind": "party", "allocatedCents": 2333037, "paidCents": 2333037, "page": 1 },
+      { "name": "Centar", "kind": "party", "allocatedCents": 11166453, "paidCents": 11166452, "page": 1 },
+      { "name": "Dalija Orešković i ljudi s imenom i prezimenom", "kind": "party", "allocatedCents": 4300056, "paidCents": 4300056, "page": 1 },
+      { "name": "Domovinski pokret", "kind": "party", "allocatedCents": 74054848, "paidCents": 74054847, "page": 1 },
+      { "name": "Ermina Lekaj Prljaskaj", "kind": "independent", "allocatedCents": 2566340, "paidCents": 2566340, "page": 1 },
+      { "name": "Fokus", "kind": "party", "allocatedCents": 6242179, "paidCents": 6242180, "page": 1 },
+      { "name": "Furio Radin", "kind": "independent", "allocatedCents": 6242179, "paidCents": 6242180, "page": 1 },
+      { "name": "Građansko-liberalni savez", "kind": "party", "allocatedCents": 6866397, "paidCents": 6866396, "page": 1 },
+      { "name": "Hrvatski demokratski savez Slavonije i Baranje", "kind": "party", "allocatedCents": 2333037, "paidCents": 2333037, "page": 1 },
+      { "name": "Hrast – pokret za uspješnu Hrvatsku", "kind": "party", "allocatedCents": 2333037, "paidCents": 2333037, "page": 1 },
+      { "name": "Hrvatska demokratska zajednica", "kind": "party", "allocatedCents": 374247630, "paidCents": 374247630, "page": 1 },
+      { "name": "Hrvatska demokršćanska stranka", "kind": "party", "allocatedCents": 6242179, "paidCents": 6242180, "page": 2 },
+      { "name": "Hrvatska konzervativna stranka", "kind": "party", "allocatedCents": 4666074, "paidCents": 4666073, "page": 2 },
+      { "name": "Hrvatska narodna stranka – liberalni demokrati", "kind": "party", "allocatedCents": 6242179, "paidCents": 6242180, "page": 2 },
+      { "name": "Hrvatska seljačka stranka", "kind": "party", "allocatedCents": 8575216, "paidCents": 8575216, "page": 2 },
+      { "name": "Hrvatska socijalno-liberalna stranka", "kind": "party", "allocatedCents": 12484358, "paidCents": 12484356, "page": 2 },
+      { "name": "Hrvatska stranka umirovljenika", "kind": "party", "allocatedCents": 6242179, "paidCents": 6242180, "page": 2 },
+      { "name": "Hrvatski suverenisti", "kind": "party", "allocatedCents": 10542235, "paidCents": 10542236, "page": 2 },
+      { "name": "Istarski demokratski sabor", "kind": "party", "allocatedCents": 15050698, "paidCents": 15050697, "page": 2 },
+      { "name": "Most", "kind": "party", "allocatedCents": 54470790, "paidCents": 54470791, "page": 2 },
+      { "name": "Možemo! – politička platforma", "kind": "party", "allocatedCents": 54583829, "paidCents": 54583830, "page": 2 },
+      { "name": "Narodna stranka – reformisti", "kind": "party", "allocatedCents": 2566340, "paidCents": 2566340, "page": 2 },
+      { "name": "Nezavisna platforma sjevera", "kind": "party", "allocatedCents": 7818284, "paidCents": 7818283, "page": 2 },
+      { "name": "Nezavisni", "kind": "party", "allocatedCents": 3909142, "paidCents": 3909143, "page": 2 },
+      { "name": "Nova ljevica", "kind": "party", "allocatedCents": 2566340, "paidCents": 2566340, "page": 2 },
+      { "name": "Pravo i pravda", "kind": "party", "allocatedCents": 3909142, "paidCents": 3909143, "page": 2 },
+      { "name": "Radnička fronta", "kind": "party", "allocatedCents": 2566340, "paidCents": 2566340, "page": 2 },
+      { "name": "Robert Jankovics", "kind": "independent", "allocatedCents": 6242179, "paidCents": 6242180, "page": 2 },
+      { "name": "Samostalna demokratska srpska stranka", "kind": "party", "allocatedCents": 19741668, "paidCents": 19741668, "page": 2 },
+      { "name": "Socijaldemokratska partija Hrvatske", "kind": "party", "allocatedCents": 234027696, "paidCents": 234027695, "page": 2 },
+      { "name": "Stranka s imenom i prezimenom", "kind": "party", "allocatedCents": 2566340, "paidCents": 2566340, "page": 2 },
+      { "name": "Veljko Kajtazi", "kind": "independent", "allocatedCents": 6242179, "paidCents": 6242180, "page": 2 },
+      { "name": "Vladimir Bilek", "kind": "independent", "allocatedCents": 6242179, "paidCents": 6242180, "page": 2 }
+    ]
+  },
+  "parliament": {
+    "sourceId": "sabor-activity-2026", "term": 11,
+    "periodStart": "2026-01-15", "periodEnd": "2026-07-15",
+    "metrics": [
+      { "label": "Održane sjednice", "value": 2, "locator": "Uvodni odlomak, polugodišnji pregled" },
+      { "label": "Dani zasjedanja", "value": 84, "locator": "Uvodni odlomak, polugodišnji pregled" },
+      { "label": "Raspravljene točke", "value": 188, "locator": "Uvodni odlomak, polugodišnji pregled" },
+      { "label": "Doneseni zakoni", "value": 70, "locator": "Drugi odlomak; 53 redovnim i 17 hitnim postupkom" }
+    ],
+    "records": [
+      { "title": "Povjerenje 16. Vladi Republike Hrvatske", "date": "2024-05-17", "evidence": { "sourceId": "government-confidence-2024", "locator": "Zaključak točke dnevnog reda", "date": "2024-05-17", "description": "Službeni zapis potvrđuje iskazano povjerenje Vladi. Ovaj pojedinačni događaj prikazuje se odvojeno od polugodišnjih agregata za 2026." } }
+    ],
+    "limitations": "Agregati opisuju cijeli Sabor, ne pojedinu stranku ili zastupnika. Nisu ocjena kvalitete rada. Pojedinačni glasovi, potpuni skup prijedloga i inicijativa te prisutnost nisu uvezeni. Poveznica na službeni zapis ne dokazuje kako je glasao svaki zastupnik."
+  },
+  "commitments": [
+    {
+      "id": "government-2024-wages", "title": "Prosječna neto i minimalna bruto plaća",
+      "owner": "16. Vlada Republike Hrvatske · zajednički program partnera u vlasti", "governmentId": "plenkovic-3",
+      "program": { "sourceId": "government-program-2024", "version": "Program 2024.–2028. · izvorni PDF, v1 dosjea", "publicationDate": null, "page": 9 },
+      "quote": "Prosječna mjesečna neto plaća dosegnut će 1600 eura, a minimalna bruto plaća 1250 eura.",
+      "topic": "employment", "deadline": null,
+      "deadlineNote": "Programski horizont je 2028. godina; citirani odlomak ne određuje točan dan. Ne izmišljamo datum 31. prosinca.",
+      "targets": [ { "label": "Prosječna mjesečna neto plaća", "value": 1600, "unit": "EUR, nominalno" }, { "label": "Minimalna bruto plaća", "value": 1250, "unit": "EUR, nominalno" } ],
+      "state": "action",
+      "evidence": [
+        { "sourceId": "minimum-wage-2026", "locator": "Članci 1. i 2.", "date": "2025-10-24", "description": "Uredba određuje 1.050 EUR bruto od 1. siječnja do 31. prosinca 2026.; iznos je ispod programskog cilja od 1.250 EUR." },
+        { "sourceId": "minimum-wage-2027-announcement", "locator": "Uvodni odlomak", "date": "2026-10-29", "description": "Ministarstvo izvještava o uredbi za 2027. s iznosom 1.130 EUR bruto. To je službena radnja za buduće razdoblje, ne dokaz sadašnje isplate." }
+      ],
+      "indicators": ["nominal-net-wages"],
+      "limitations": "Službene radnje odnose se na minimalnu bruto plaću, a DZS serija na prosječnu neto plaću u pravnim osobama. Nominalni iznosi nisu kupovna moć. Serija DZS-a od 2025. koristi NKD 2025; nije potvrđena potpuno jednaka populacija kao u programu. Ne izračunavamo postotak ispunjenja ni ocjenu održano/prekršeno."
+    }
+  ]
+}

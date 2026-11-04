@@ -30,6 +30,13 @@ function eurostat(
 }
 
 export const seriesDefinitions: SeriesDefinition[] = [
+  ...[
+    { slug: "education-spending", functionCode: "GF09", name: "obrazovanje" },
+    { slug: "defence-spending", functionCode: "GF02", name: "obranu" },
+  ].map(({ slug, functionCode, name }) => ({
+    ...eurostat(slug, "gov_10a_exp", "ANNUAL", "% BDP-a", { unit: "PC_GDP", sector: "S13", na_item: "TE", cofog99: functionCode }, "gov_10a_exp", `Ukupni rashodi opće države (S13) za ${name}, COFOG ${functionCode}, ESA 2010, postotak godišnjeg BDP-a.`),
+    limitations: "Funkcionalna klasifikacija COFOG, ne proračun pojedinog ministarstva. Veći iznos nije automatski povoljan ili nepovoljan. Obrana prema COFOG-u nije NATO definicija obrambenih izdataka. EU agregat i izvorne oznake ostaju zasebni.",
+  })),
   { ...eurostat("regional-gdp", "nama_10r_3gdp", "ANNUAL", "EUR / stanovniku", { unit: "EUR_HAB" }, "reg_eco10", "BDP po stanovniku u tekućim tržišnim cijenama, EUR po stanovniku; županije kao NUTS 3 i zasebna nacionalna referenca.", "percent"), geographies: regionalGeographies,
     limitations: "Nominalni BDP, nije realni rast ni dohodak kućanstva. Eurostat zaokružuje iznose u EUR po stanovniku. Granice NUTS 2024; ne spajamo stare i nove kodove. Nacionalna referenca nije prosjek županijskih vrijednosti." },
   { ...eurostat("regional-migration-adjusted", "demo_r_gind3", "ANNUAL", "osoba", { indic_de: "CNMIGRAT" }, "demo_r_gind3", "Neto migracija sa statističkom prilagodbom: razlika ukupne i prirodne promjene stanovništva, godišnje, NUTS 3.", "percent"), geographies: regionalGeographies,

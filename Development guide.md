@@ -930,7 +930,7 @@ Avoid tracking users' individual political preferences. Do not store party-compa
 
 ## 21. Implementation milestones
 
-**Status — 3 November 2026:** Phases 1–6 have their core implementation. Phase 6 adds five official election datasets (103 result areas), sourced lists/candidates and seat allocations, turnout/results displays, 21 county profiles, a clickable map and two verified regional indicators. The initial backfill covers parliamentary 2020/2024, European 2024 and presidential 2024/25; older/local elections and future schedule/candidate feeds remain coverage work. See [election and regional contracts](./docs/elections-regions.md), [government history rules](./docs/government-history.md), [party directory contracts](./docs/party-directory.md) and [summary workflow and setup](./docs/program-summaries.md). Phase 5 still requires model credentials, individual reviewer accounts and real human review before actual summary publication. Phase 7 (accountability) is next. Tourism remains staged for source review; no missing data are invented.
+**Status — 4 November 2026:** Phases 1–7 have their core implementation with explicitly limited initial coverage. Phase 7 adds 34 regular-financing recipients, scoped parliamentary activity, one government-program commitment with dated evidence, correction workflows and two COFOG expenditure series. Donations, campaign expenses, individual votes and a wider commitment backfill remain coverage work. See the [Phase 7 learning walkthrough, decisions, failed checks and fixes](./docs/phases/phase-07.md). Phase 6 covers five official election datasets (103 result areas), 21 county profiles and two regional indicators; older/local elections and future schedules remain coverage work. See [election and regional contracts](./docs/elections-regions.md), [government history rules](./docs/government-history.md), [party directory contracts](./docs/party-directory.md) and [summary workflow and setup](./docs/program-summaries.md). Real AI summary publication still requires model credentials, individual accounts and human review. Phase 8 (production hardening) is next. Tourism remains staged for source review; no missing data are invented.
 
 ### Phase 1 — Foundation and UI
 
@@ -1017,6 +1017,8 @@ Use clearly labeled development fixtures where live data are not yet connected. 
 - Expand supported indicators.
 
 **Deliverable:** A richer public accountability platform without editorialized scoring.
+
+**Initial implementation:** [Phase 7 workflow and learning notes](./docs/phases/phase-07.md), including exact coverage, operational commands, privacy boundaries, source discrepancies, failed tests and the mobile-overflow fix. Each implemented phase now gets a walkthrough under `docs/phases/`; earlier development histories are not reconstructed.
 
 ### Phase 8 — Production hardening
 

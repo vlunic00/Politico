@@ -35,6 +35,7 @@ export function PartyProfile({ party, registryCheckedAt }: { party?: DirectoryPa
   ];
   return (
     <div className="space-y-6">
+      {party && <section className="surface p-5"><h3 className="section-title">Financiranje i javna odgovornost</h3><p className="subtle mt-2">Povijesne državne isplate i dostupni službeni izvori prikazani su u zasebnom dosjeu. Izostanak iz tablice ne znači da su prihodi nula ili da stranka nije djelovala.</p><Link className="text-link mt-3 text-xs" href="/accountability#financing">Pregled financiranja i obuhvata ↗</Link></section>}
       <section className="surface grid overflow-hidden md:grid-cols-[1.4fr_1fr]">
         <div className="p-7 sm:p-10">
           <p className="eyebrow mb-3">

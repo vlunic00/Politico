@@ -30,6 +30,10 @@ const rules = [
     "Izborne jedinice nisu županije. Glasove i mandate koalicijskih lista ne dijelimo na stranke. Nazivnici izlaznosti i udjela ostaju navedeni za svaki krug. Regionalne usporedbe koriste istu godinu i definiciju; migracijski saldo sa statističkom prilagodbom nije izravan broj doseljenih minus odseljenih.",
   ],
   [
+    "Dokaz nije politička ocjena",
+    "Financijske isplate nisu ukupni prihodi. Saborski agregati nisu kvaliteta rada zastupnika. Status obveze opisuje dostupne dokaze, a ne ispunjenje obećanja; zajednički program Vlade ne pripisujemo samo jednoj stranci. Točan rok i datum objave ostaju nepoznati ako nisu utvrđeni.",
+  ],
+  [
     "Revizije i kontinuitet",
     "Čuvamo izvorne snimke i revizije gdje licenca dopušta. Neuspješan ili prazan uvoz ne smije izbrisati prethodno validirane podatke. Sumnjive promjene čekaju pregled.",
   ],
@@ -60,14 +64,16 @@ export default function MethodologyPage() {
           Ovo je razvojna verzija. Politički pregled koristi ručno provjerene,
           datirane službene izvore. Statističke serije dolaze iz Eurostata i DZS-a uz validaciju, snimke izvora i oznake statusa. AI sažeci
           objavljuju se tek nakon provjere citata, hrvatskog jezika i obuhvata tema. Parlamentarna evidencija nije cjelovit registar
-          stranaka niti potvrda izborne kandidature. Javni kanal za prijavu
-          ispravaka bit će objavljen prije javnog izdanja.
+          stranaka niti potvrda izborne kandidature. Prijave ispravaka pregledava uredništvo;
+          prihvaćene promjene imaju javno objašnjenje i dokaz, uz privatni revizijski trag.
         </p>
         <p className="subtle mt-3">
-          Tijekom razvoja prijavite uočeni problem održavatelju repozitorija i
-          navedite poveznicu na stranicu te službeni izvor.
+          U javnoj prijavi navedite putanju stranice, spornu tvrdnju, prijedlog i dokaz.
+          Ne tražimo kontaktne podatke. Izvorne prijave i odbijene prijave ne objavljujemo.
         </p>
         <div className="mt-5 flex flex-wrap gap-6">
+          <Link href="/corrections" className="text-link">Prijava i javni dnevnik ispravaka ↗</Link>
+          <Link href="/accountability" className="text-link">Dokazi javne odgovornosti ↗</Link>
           <Link href="/compare/governments#comparison-methodology" className="text-link">
             Pravila usporedbe administracija ↗
           </Link>

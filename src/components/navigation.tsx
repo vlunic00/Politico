@@ -10,6 +10,7 @@ import {
   Landmark,
   LayoutDashboard,
   Map,
+  Scale,
   Users,
   Vote,
 } from "lucide-react";
@@ -23,6 +24,7 @@ const links = [
   { href: "/parties", label: t.parties, icon: Users },
   { href: "/elections", label: t.elections, icon: Vote },
   { href: "/regions", label: t.regions, icon: Map },
+  { href: "/accountability", label: t.accountability, icon: Scale },
   { href: "/sources", label: t.sources, icon: Database },
   { href: "/methodology", label: t.methodology, icon: BookOpen },
 ];

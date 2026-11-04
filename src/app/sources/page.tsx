@@ -11,6 +11,8 @@ import { getPartyDirectory } from "@/lib/parties/data";
 import { registerCatalogueUrl, registerUrl } from "@/lib/parties/catalogue";
 import { getElections } from "@/lib/elections/data";
 import { getRegionalStatistics } from "@/lib/regions/data";
+import { accountability } from "@/lib/accountability/data";
+import accountabilitySources from "@/lib/accountability/records/2026-11-04.sources.json";
 import {
   parliamentarySnapshot,
   politicalVerificationDate,
@@ -159,6 +161,7 @@ export default async function SourcesPage() {
           ))}
         </ul>
       </section>
+      <section id="accountability" className="surface mt-6 p-6"><h2 className="section-title">Javna odgovornost · podrijetlo dosjea</h2><p className="subtle mt-3">Dosje v{accountability.version}, provjeren {formatDate(accountability.verifiedAt)}. Izvorni PDF i HTML odgovori arhivirani su po SHA-256; datumi preuzimanja nisu datumi objave. Dnevnik ispravaka čuva se zasebno od izvornih prijava.</p><ul className="mt-4 divide-y">{accountability.sources.map((source) => { const snapshot = accountabilitySources.find((entry) => entry.sourceId === source.id)!; return <li key={source.id} className="py-4"><a className="text-link text-xs" href={source.url} target="_blank" rel="noreferrer">{source.title} ↗</a><p className="subtle mt-2">Objava: {formatDate(source.publicationDate)} · preuzeto: {formatDate(snapshot.retrievedAt)}. {source.note}</p><p className="mt-2 break-all text-[10px] text-muted-foreground">SHA-256: {snapshot.sha256}</p></li>; })}</ul><div className="mt-4 flex flex-wrap gap-4"><a className="text-link text-xs" href="/accountability">Zapisi, obuhvat i dokazi ↗</a><a className="text-link text-xs" href="/corrections">Prijava i dnevnik ispravaka ↗</a></div></section>
       <p className="subtle mt-6">
         Uz svaki budući skup podataka navodimo identifikator, metodologiju,
         licencu, datum preuzimanja i reviziju. Poveznica na početnu stranicu

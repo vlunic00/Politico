@@ -15,5 +15,5 @@ export default defineConfig({
   use: { baseURL: "http://127.0.0.1:3101", httpCredentials: { username: "test-reviewer", password: token, send: "always" }, trace: "retain-on-failure" },
   projects: [{ name: "desktop", use: { ...devices["Desktop Chrome"] } }, { name: "mobile", use: { ...devices["iPhone 13"], defaultBrowserType: "chromium" } }],
   webServer: { command: "npm run start -- --port 3101", url: "http://127.0.0.1:3101/icon.svg", reuseExistingServer: false, timeout: 60000,
-    env: { DATABASE_URL: database.toString(), PROGRAM_DOCUMENT_DIR: resolve(".data", schema), EDITORIAL_USERS: users, EDITORIAL_ORIGIN: "http://127.0.0.1:3101", LLM_API_KEY: "", LLM_MODEL: "" } },
+    env: { DATABASE_URL: database.toString(), PROGRAM_DOCUMENT_DIR: resolve(".data", schema), EDITORIAL_USERS: users, EDITORIAL_ORIGIN: "http://127.0.0.1:3101", PUBLIC_ORIGIN: "http://127.0.0.1:3101", LLM_API_KEY: "", LLM_MODEL: "" } },
 });

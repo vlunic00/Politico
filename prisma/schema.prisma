@@ -305,3 +305,32 @@ model IngestionRun {
   recordsPublished Int            @default(0)
   error          String?
 }
+
+model Correction {
+  id           String             @id @default(cuid())
+  pagePath     String
+  claim        String
+  proposed     String
+  evidenceUrl  String
+  fingerprint  String
+  status       String             @default("PENDING")
+  createdAt    DateTime           @default(now()) @db.Timestamptz(3)
+  reviews      CorrectionReview[]
+
+  @@index([createdAt])
+  @@index([fingerprint, createdAt])
+}
+
+model CorrectionReview {
+  id            String     @id @default(cuid())
+  correctionId  String
+  correction    Correction @relation(fields: [correctionId], references: [id], onDelete: Restrict)
+  actorId       String
+  action        String
+  note          String
+  publicSummary String?
+  sourceUrl     String?
+  createdAt     DateTime   @default(now()) @db.Timestamptz(3)
+
+  @@index([createdAt])
+}

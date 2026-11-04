@@ -89,6 +89,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         <footer className="mx-auto flex max-w-[1500px] flex-col justify-between gap-4 border-t px-5 py-6 text-xs text-muted-foreground sm:flex-row sm:px-8 lg:px-10">
           <p>Javni podaci. Jasni izvori. Bez političkog rangiranja.</p>
           <div className="flex flex-wrap gap-5">
+            <Link href="/corrections" className="hover:underline">Prijavite ispravak</Link>
             <Link href="/methodology" className="hover:underline">
               Metodologija i ispravci
             </Link>

@@ -1,5 +1,7 @@
 # Statistical database contracts
 
+Phase 7 adds `Correction` and transactional `CorrectionReview` decisions with reviewer authorization, database status constraints, private submissions and a narrowly selected public log. Its additive migration preserves all existing records. The small accountability dossier follows the dated, Git-versioned government-history pattern, with strict validation and separately pinned raw-source hashes; it is not an automatic finance/parliament feed. COFOG education/defence series reuse the statistical contracts below. See the [Phase 7 workflow, privacy boundaries and source limitations](./phases/phase-07.md).
+
 The statistical foundation is PostgreSQL and Prisma. Phase 4 adds sourced party registrations and immutable program versions; see [party data contracts](./party-directory.md). Dated government, parliamentary and leadership editorial records retain their separate sources.
 
 Phase 5 adds `ProgramExtraction` (page text/hash per source version), `ProgramSummary` (generation provenance, original JSON, editable draft, review status and approved editions), and append-only `SummaryReview` snapshots. All summaries require Croatian (`hr-HR`) and exact source quotations; only approved records are public. See [summary contracts and editorial authorization](./program-summaries.md). The migration is additive and preserves existing sources, programs and observations.
